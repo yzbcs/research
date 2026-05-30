@@ -1,0 +1,171 @@
+#!/usr/bin/env python3
+"""Generate index.html for root-level HTML research pages."""
+
+from __future__ import annotations
+
+import html
+import re
+from datetime import datetime
+from pathlib import Path
+
+ROOT = Path(__file__).resolve().parents[1]
+OUTPUT_FILE = ROOT / "index.html"
+SKIP_FILES = {"index.html"}
+SKIP_DIRS = {".git", ".github", "scripts", "node_modules", "__pycache__"}
+
+
+def parse_html_metadata(path: Path) -> dict[str, str]:
+    meta = {
+        "title": path.stem.replace("_", " ").replace("-", " ").title(),
+        "date": "",
+        "description": "",
+    }
+
+    try:
+        content = path.read_text(encoding="utf-8")
+    except UnicodeDecodeError:
+        content = path.read_text(encoding="utf-8", errors="replace")
+
+    comment_match = re.search(
+        r"<!--\s*index:\s*([^|]+)\|([^|]+)\|?([^>]*)-->",
+        content,
+        re.IGNORECASE,
+    )
+    if comment_match:
+        meta["title"] = html.unescape(comment_match.group(1).strip())
+        meta["date"] = comment_match.group(2).strip()
+        meta["description"] = html.unescape(comment_match.group(3).strip())
+        return meta
+
+    title_match = re.search(r"<title[^>]*>([^<]+)</title>", content, re.IGNORECASE)
+    if title_match:
+        meta["title"] = html.unescape(title_match.group(1).strip())
+
+    desc_match = re.search(
+        r"<meta\s+[^>]*name=[\"']description[\"'][^>]*content=[\"']([^\"']+)[\"']",
+        content,
+        re.IGNORECASE,
+    )
+    if desc_match:
+        meta["description"] = html.unescape(desc_match.group(1).strip())
+
+    return meta
+
+
+def iter_pages() -> list[Path]:
+    pages: list[Path] = []
+    for path in ROOT.glob("*.html"):
+        if path.name in SKIP_FILES:
+            continue
+        if any(part in SKIP_DIRS for part in path.parts):
+            continue
+        pages.append(path)
+    return sorted(pages, key=lambda p: p.stat().st_mtime, reverse=True)
+
+
+def render_item(path: Path) -> str:
+    meta = parse_html_metadata(path)
+    date = meta["date"] or datetime.fromtimestamp(path.stat().st_mtime).strftime("%Y-%m-%d")
+    title = html.escape(meta["title"])
+    description = html.escape(meta["description"])
+    href = html.escape(path.name)
+
+    return f"""
+        <li class="item">
+          <a class="item-link" href="{href}">
+            <span class="item-title">{title}</span>
+            <span class="item-date">{date}</span>
+          </a>
+          <p class="item-desc">{description}</p>
+        </li>"""
+
+
+def generate_index() -> str:
+    pages = iter_pages()
+    items = "\n".join(render_item(path) for path in pages)
+    if not items:
+        items = '<li class="item"><p class="item-desc">No HTML pages yet.</p></li>'
+
+    updated = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+    count = len(pages)
+
+    return f"""<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Research HTML archive index">
+  <title>Research Archive</title>
+  <style>
+    * {{ box-sizing: border-box; margin: 0; padding: 0; }}
+    body {{
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      background: #f6f7f9;
+      color: #24292f;
+      line-height: 1.6;
+      padding: 32px;
+    }}
+    .container {{ max-width: 920px; margin: 0 auto; }}
+    h1 {{ font-size: 28px; margin-bottom: 6px; letter-spacing: 0; }}
+    .subtitle {{ color: #57606a; margin-bottom: 24px; }}
+    .count {{
+      display: inline-block;
+      background: #dbeafe;
+      color: #1d4ed8;
+      border-radius: 6px;
+      padding: 2px 8px;
+      font-size: 13px;
+      vertical-align: middle;
+    }}
+    ul {{ list-style: none; display: grid; gap: 10px; }}
+    .item {{
+      background: #fff;
+      border: 1px solid #d8dee4;
+      border-radius: 8px;
+      padding: 15px 17px;
+    }}
+    .item-link {{
+      color: inherit;
+      display: flex;
+      gap: 12px;
+      align-items: baseline;
+      justify-content: space-between;
+      text-decoration: none;
+    }}
+    .item-link:hover .item-title {{ color: #0969da; }}
+    .item-title {{ font-weight: 650; }}
+    .item-date {{ color: #6e7781; font-size: 13px; white-space: nowrap; }}
+    .item-desc {{
+      border-left: 3px solid #d8dee4;
+      color: #57606a;
+      font-size: 14px;
+      margin-top: 7px;
+      padding-left: 10px;
+    }}
+    .footer {{ color: #6e7781; font-size: 12px; margin-top: 24px; text-align: center; }}
+    @media (max-width: 640px) {{
+      body {{ padding: 18px; }}
+      .item-link {{ align-items: flex-start; flex-direction: column; gap: 2px; }}
+    }}
+  </style>
+</head>
+<body>
+  <main class="container">
+    <h1>Research Archive <span class="count">{count} pages</span></h1>
+    <p class="subtitle">Automatically generated index · Updated: {updated}</p>
+    <ul>{items}
+    </ul>
+    <p class="footer">Generated by scripts/gen_index.py</p>
+  </main>
+</body>
+</html>
+"""
+
+
+def main() -> None:
+    OUTPUT_FILE.write_text(generate_index(), encoding="utf-8")
+    print(f"Generated {OUTPUT_FILE}")
+
+
+if __name__ == "__main__":
+    main()
