@@ -1,0 +1,668 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>+Control 修复案例展示</title>
+  <style>
+    :root {
+      color-scheme: light;
+      --ink: #1b2430;
+      --muted: #607086;
+      --line: #d8dee8;
+      --bg: #f6f8fb;
+      --panel: #ffffff;
+      --control: #1f6feb;
+      --base: #b42318;
+      --gain: #087443;
+      --warn: #9a6700;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      background: var(--bg);
+      color: var(--ink);
+      font: 15px/1.55 -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    }
+
+    header {
+      background: #0f172a;
+      color: #fff;
+      padding: 32px 40px;
+    }
+
+    header h1 {
+      margin: 0 0 8px;
+      font-size: 28px;
+      letter-spacing: 0;
+    }
+
+    header p {
+      max-width: 980px;
+      margin: 0;
+      color: #cbd5e1;
+      font-size: 15px;
+    }
+
+    main {
+      max-width: 1180px;
+      margin: 0 auto;
+      padding: 28px 24px 48px;
+    }
+
+    section {
+      margin-bottom: 24px;
+    }
+
+    h2 {
+      margin: 0 0 12px;
+      font-size: 20px;
+    }
+
+    h3 {
+      margin: 0;
+      font-size: 18px;
+    }
+
+    .summary {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 12px;
+    }
+
+    .metric {
+      background: var(--panel);
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      padding: 14px 16px;
+    }
+
+    .metric strong {
+      display: block;
+      font-size: 24px;
+      line-height: 1.1;
+      margin-bottom: 4px;
+    }
+
+    .metric span {
+      color: var(--muted);
+      font-size: 13px;
+    }
+
+    .table-wrap {
+      overflow-x: auto;
+      background: var(--panel);
+      border: 1px solid var(--line);
+      border-radius: 8px;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      min-width: 920px;
+    }
+
+    th,
+    td {
+      text-align: left;
+      padding: 10px 12px;
+      border-bottom: 1px solid var(--line);
+      vertical-align: top;
+    }
+
+    th {
+      color: #334155;
+      background: #eef2f7;
+      font-size: 12px;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+    }
+
+    tr:last-child td {
+      border-bottom: 0;
+    }
+
+    a {
+      color: var(--control);
+      text-decoration: none;
+    }
+
+    a:hover {
+      text-decoration: underline;
+    }
+
+    .cards {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 16px;
+    }
+
+    .card {
+      background: var(--panel);
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      padding: 18px;
+    }
+
+    .card-head {
+      display: flex;
+      justify-content: space-between;
+      gap: 14px;
+      align-items: flex-start;
+      margin-bottom: 14px;
+    }
+
+    .tag-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      margin-top: 8px;
+    }
+
+    .tag {
+      display: inline-flex;
+      align-items: center;
+      border-radius: 999px;
+      padding: 3px 9px;
+      font-size: 12px;
+      font-weight: 650;
+      background: #e8f1ff;
+      color: #174ea6;
+    }
+
+    .tag.category {
+      background: #fef3c7;
+      color: #7a4b00;
+    }
+
+    .score {
+      min-width: 220px;
+      text-align: right;
+      font-variant-numeric: tabular-nums;
+    }
+
+    .score .from {
+      color: var(--base);
+      font-weight: 700;
+    }
+
+    .score .to {
+      color: var(--gain);
+      font-weight: 800;
+    }
+
+    .score small {
+      display: block;
+      color: var(--muted);
+      margin-top: 2px;
+    }
+
+    .compare {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 14px;
+      margin: 12px 0;
+    }
+
+    .pane {
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      padding: 12px;
+      background: #fbfcfe;
+    }
+
+    .pane h4 {
+      margin: 0 0 6px;
+      font-size: 13px;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+    }
+
+    .pane.baseline h4 {
+      color: var(--base);
+    }
+
+    .pane.control h4 {
+      color: var(--gain);
+    }
+
+    .pane p {
+      margin: 0;
+    }
+
+    .evidence {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 8px;
+      margin-top: 12px;
+      font-size: 13px;
+    }
+
+    .evidence a {
+      display: block;
+      padding: 8px 10px;
+      border: 1px solid var(--line);
+      border-radius: 6px;
+      background: #fff;
+      overflow-wrap: anywhere;
+    }
+
+    .note {
+      color: var(--muted);
+      font-size: 13px;
+      margin-top: 8px;
+    }
+
+    @media (max-width: 860px) {
+      header {
+        padding: 24px 20px;
+      }
+
+      main {
+        padding: 20px 14px 36px;
+      }
+
+      .summary,
+      .compare,
+      .evidence {
+        grid-template-columns: 1fr;
+      }
+
+      .card-head {
+        display: block;
+      }
+
+      .score {
+        text-align: left;
+        margin-top: 10px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>+Control 修复案例展示 / Repair Case Gallery</h1>
+    <p>
+      这里展示 T1 +Control 配方如何把 baseline 失败轨迹修好：每个案例都包含任务定义、baseline 结果、
+      +Control 结果，以及本地 ClawEvalKit 仓库中的 transcript / trajectory 证据路径。
+    </p>
+  </header>
+
+  <main>
+    <section class="summary" aria-label="Summary metrics">
+      <div class="metric"><strong>8</strong><span>精选 +Control 修复案例</span></div>
+      <div class="metric"><strong>2</strong><span>已写入论文 Appendix N 的案例</span></div>
+      <div class="metric"><strong>13</strong><span>本地 ClawBench fail-to-pass 修复</span></div>
+      <div class="metric"><strong>8</strong><span>AgentBench 提升 >= 20 分的案例</span></div>
+    </section>
+
+    <section>
+      <h2>案例总览 / Overview</h2>
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>案例</th>
+              <th>基准</th>
+              <th>失败类型</th>
+              <th>Baseline 原始表现</th>
+              <th>+Control</th>
+              <th>提升</th>
+              <th>展示价值</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>eml-017</td>
+              <td>ClawBench</td>
+              <td>A: goal grounding</td>
+              <td>0.2162, 8/37 checks</td>
+              <td>1.0, 37/37 checks</td>
+              <td>+0.7838</td>
+              <td>展示 plan-first 如何锚定精确命名约束，再通过验证保证合规。</td>
+            </tr>
+            <tr>
+              <td>large-codebase-navigation</td>
+              <td>AgentBench</td>
+              <td>B: action instantiation</td>
+              <td>43.5</td>
+              <td>96.2</td>
+              <td>+52.7</td>
+              <td>展示 plan/preflight 如何把搜索落到真实 workspace，而不是看似合理但错误的路径。</td>
+            </tr>
+            <tr>
+              <td>cs-002-db-migration</td>
+              <td>ClawBench</td>
+              <td>B/D: action + verification</td>
+              <td>0.3333, 1/3 checks</td>
+              <td>1.0, 3/3 checks</td>
+              <td>+0.6667</td>
+              <td>展示 control 如何把“只写报告”变成实际迁移 + schema 验证闭环。</td>
+            </tr>
+            <tr>
+              <td>impossible-request</td>
+              <td>AgentBench</td>
+              <td>A/D: feasibility + recovery</td>
+              <td>74.8</td>
+              <td>100.0</td>
+              <td>+25.2</td>
+              <td>展示 preflight 如何识别矛盾约束，避免错误地产生无效文件。</td>
+            </tr>
+            <tr>
+              <td>law-002-lease-analysis</td>
+              <td>ClawBench</td>
+              <td>A/D: extraction completeness</td>
+              <td>0.75, 3/4 checks</td>
+              <td>1.0, 4/4 checks</td>
+              <td>+0.25</td>
+              <td>展示 control 如何补齐任务要求覆盖和内容检查。</td>
+            </tr>
+            <tr>
+              <td>find-anomalies</td>
+              <td>AgentBench</td>
+              <td>B/D: data reading + verification</td>
+              <td>49.2</td>
+              <td>90.0</td>
+              <td>+40.8</td>
+              <td>展示 control 如何迫使 agent 正确读取数据，并用脚本支撑分析，而不是凭不完整数据幻觉。</td>
+            </tr>
+            <tr>
+              <td>missing-dependency</td>
+              <td>AgentBench</td>
+              <td>D: recovery</td>
+              <td>34.8</td>
+              <td>75.0</td>
+              <td>+40.2</td>
+              <td>展示 failure-triggered reflection 如何从缺文件/缺依赖中恢复，而不是直接放弃。</td>
+            </tr>
+            <tr>
+              <td>repo-refactor</td>
+              <td>AgentBench</td>
+              <td>A/B/D: multi-step execution</td>
+              <td>54.2</td>
+              <td>90.0</td>
+              <td>+35.8</td>
+              <td>展示 bounded planning 如何保证多步重构完整收尾：模块、imports、测试、清理、提交。</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <section>
+      <h2>详细案例 / Detailed Cases</h2>
+      <div class="cards">
+        <article class="card">
+          <div class="card-head">
+            <div>
+              <h3>eml-017：自动生成外出回复 / Out-of-Office Reply Generator</h3>
+              <div class="tag-row">
+                <span class="tag category">A 类：目标约束 grounding</span>
+                <span class="tag">论文 Appendix N 案例</span>
+                <span class="tag">ClawBench</span>
+              </div>
+            </div>
+            <div class="score">
+              <span class="from">0.2162</span> -> <span class="to">1.0</span>
+              <small>8/37 checks -> 37/37 checks</small>
+            </div>
+          </div>
+          <div class="compare">
+            <div class="pane baseline">
+              <h4>Baseline 失败点</h4>
+              <p>回复内容基本生成了，但没有遵守输出文件命名规则，导致大部分按发送人检查的测试失败。</p>
+            </div>
+            <div class="pane control">
+              <h4>+Control 如何修复</h4>
+              <p>Plan-first 先明确重述文件命名约束，后续验证步骤确认每个回复文件都匹配 sender local-part 要求。</p>
+            </div>
+          </div>
+          <div class="evidence">
+            <a href="../../benchmarks/claw-bench/tasks/email/eml-017-out-of-office-responder/instruction.md">任务定义 / Task definition</a>
+            <a href="../../outputs/clawbench-official/glm-4.7/eml-017.json">Baseline 结果</a>
+            <a href="../../outputs/harness/control/clawbench-official/glm-4.7/eml-017.json">+Control 结果</a>
+            <a href="../../outputs/harness/control/clawbench-official/transcripts/glm-4.7/eml-017/transcript.json">+Control 轨迹 / transcript</a>
+          </div>
+        </article>
+
+        <article class="card">
+          <div class="card-head">
+            <div>
+              <h3>large-codebase-navigation：查找函数调用点 / Find calculate_discount Callers</h3>
+              <div class="tag-row">
+                <span class="tag category">B 类：行动实例化 / 路径 grounding</span>
+                <span class="tag">论文 Appendix N 案例</span>
+                <span class="tag">AgentBench</span>
+              </div>
+            </div>
+            <div class="score">
+              <span class="from">43.5</span> -> <span class="to">96.2</span>
+              <small>+52.7 points</small>
+            </div>
+          </div>
+          <div class="compare">
+            <div class="pane baseline">
+              <h4>Baseline 失败点</h4>
+              <p>没有真正搜索 <code>calculate_discount</code>；幻觉式声称做了全面搜索，并错误判断函数不存在。</p>
+            </div>
+            <div class="pane control">
+              <h4>+Control 如何修复</h4>
+              <p>先把搜索范围锚定到真实 workspace，再用正确工具找到所有调用点，并写出要求的 usage report。</p>
+            </div>
+          </div>
+          <div class="evidence">
+            <a href="../../benchmarks/agentbench-openclaw/tasks/tool-efficiency/large-codebase-navigation/task.yaml">任务定义 / Task definition</a>
+            <a href="../../outputs/agentbench/glm-4.7/large-codebase-navigation/result.json">Baseline 结果</a>
+            <a href="../../outputs/harness/control/agentbench/glm-4.7/large-codebase-navigation/result.json">+Control 结果</a>
+            <a href="../../outputs/harness/control/agentbench/glm-4.7/large-codebase-navigation/agent_result.json">+Control 轨迹 / trajectory</a>
+          </div>
+        </article>
+
+        <article class="card">
+          <div class="card-head">
+            <div>
+              <h3>cs-002-db-migration：SQLite 数据库迁移 / Schema Migration</h3>
+              <div class="tag-row">
+                <span class="tag category">B/D 类：执行 + 验证闭环</span>
+                <span class="tag">ClawBench</span>
+              </div>
+            </div>
+            <div class="score">
+              <span class="from">0.3333</span> -> <span class="to">1.0</span>
+              <small>1/3 checks -> 3/3 checks</small>
+            </div>
+          </div>
+          <div class="compare">
+            <div class="pane baseline">
+              <h4>Baseline 失败点</h4>
+              <p>生成了 migration report，但实际操作验证和 schema 变更检查没有通过。</p>
+            </div>
+            <div class="pane control">
+              <h4>+Control 如何修复</h4>
+              <p>实际执行迁移，生成辅助脚本，并在最终报告前验证 schema 变更是否真的生效。</p>
+            </div>
+          </div>
+          <div class="evidence">
+            <a href="../../benchmarks/claw-bench/tasks/cs-engineering/cs-002-db-migration/instruction.md">任务定义 / Task definition</a>
+            <a href="../../outputs/clawbench-official/glm-4.7/cs-002-db-migration.json">Baseline 结果</a>
+            <a href="../../outputs/harness/control/clawbench-official/glm-4.7/cs-002-db-migration.json">+Control 结果</a>
+            <a href="../../outputs/harness/control/clawbench-official/transcripts/glm-4.7/cs-002-db-migration/transcript.json">+Control 轨迹 / transcript</a>
+          </div>
+        </article>
+
+        <article class="card">
+          <div class="card-head">
+            <div>
+              <h3>impossible-request：识别不可能任务 / Contradictory File Requirements</h3>
+              <div class="tag-row">
+                <span class="tag category">A/D 类：可行性检查 + 恢复</span>
+                <span class="tag">AgentBench</span>
+              </div>
+            </div>
+            <div class="score">
+              <span class="from">74.8</span> -> <span class="to">100.0</span>
+              <small>+25.2 points</small>
+            </div>
+          </div>
+          <div class="compare">
+            <div class="pane baseline">
+              <h4>Baseline 失败点</h4>
+              <p>虽然识别出任务不可能，但仍创建了 sample file，违反了“不要执行不可能要求”的正确行为。</p>
+            </div>
+            <div class="pane control">
+              <h4>+Control 如何修复</h4>
+              <p>Preflight 阶段识别出约束互相矛盾，并说明为什么不应该创建任何文件。</p>
+            </div>
+          </div>
+          <div class="evidence">
+            <a href="../../benchmarks/agentbench-openclaw/tasks/error-handling/impossible-request/task.yaml">任务定义 / Task definition</a>
+            <a href="../../outputs/agentbench/glm-4.7/impossible-request/result.json">Baseline 结果</a>
+            <a href="../../outputs/harness/control/agentbench/glm-4.7/impossible-request/result.json">+Control 结果</a>
+            <a href="../../outputs/harness/control/agentbench/glm-4.7/impossible-request/agent_result.json">+Control 轨迹 / trajectory</a>
+          </div>
+        </article>
+
+        <article class="card">
+          <div class="card-head">
+            <div>
+              <h3>law-002-lease-analysis：商业租约信息抽取 / Lease Extraction</h3>
+              <div class="tag-row">
+                <span class="tag category">A/D 类：完整性 + 验证</span>
+                <span class="tag">ClawBench</span>
+              </div>
+            </div>
+            <div class="score">
+              <span class="from">0.75</span> -> <span class="to">1.0</span>
+              <small>3/4 checks -> 4/4 checks</small>
+            </div>
+          </div>
+          <div class="compare">
+            <div class="pane baseline">
+              <h4>Baseline 失败点</h4>
+              <p>生成了结构正确的 JSON，也标记了风险条款，但关键内容抽取不完整。</p>
+            </div>
+            <div class="pane control">
+              <h4>+Control 如何修复</h4>
+              <p>覆盖所有要求的租约字段，并按任务说明检查抽取内容是否完整。</p>
+            </div>
+          </div>
+          <div class="evidence">
+            <a href="../../benchmarks/claw-bench/tasks/contract-review/law-002-lease-analysis/instruction.md">任务定义 / Task definition</a>
+            <a href="../../outputs/clawbench-official/glm-4.7/law-002-lease-analysis.json">Baseline 结果</a>
+            <a href="../../outputs/harness/control/clawbench-official/glm-4.7/law-002-lease-analysis.json">+Control 结果</a>
+            <a href="../../outputs/harness/control/clawbench-official/transcripts/glm-4.7/law-002-lease-analysis/transcript.json">+Control 轨迹 / transcript</a>
+          </div>
+        </article>
+
+        <article class="card">
+          <div class="card-head">
+            <div>
+              <h3>find-anomalies：销售数据异常分析 / Sales Data Quality Analysis</h3>
+              <div class="tag-row">
+                <span class="tag category">B/D 类：数据读取 + 验证</span>
+                <span class="tag">AgentBench</span>
+              </div>
+            </div>
+            <div class="score">
+              <span class="from">49.2</span> -> <span class="to">90.0</span>
+              <small>+40.8 points</small>
+            </div>
+          </div>
+          <div class="compare">
+            <div class="pane baseline">
+              <h4>Baseline 失败点</h4>
+              <p>分析基于截断或不完整数据，生成报告前没有真正执行可靠的数据读取流程。</p>
+            </div>
+            <div class="pane control">
+              <h4>+Control 如何修复</h4>
+              <p>先创建并运行脚本检查数据，再生成满足要求的详细 anomaly report。</p>
+            </div>
+          </div>
+          <div class="evidence">
+            <a href="../../benchmarks/agentbench-openclaw/tasks/data-analysis/find-anomalies/task.yaml">任务定义 / Task definition</a>
+            <a href="../../outputs/agentbench/glm-4.7/find-anomalies/result.json">Baseline 结果</a>
+            <a href="../../outputs/harness/control/agentbench/glm-4.7/find-anomalies/result.json">+Control 结果</a>
+            <a href="../../outputs/harness/control/agentbench/glm-4.7/find-anomalies/agent_result.json">+Control 轨迹 / trajectory</a>
+          </div>
+        </article>
+
+        <article class="card">
+          <div class="card-head">
+            <div>
+              <h3>missing-dependency：缺失依赖恢复 / Recover from Missing Inputs</h3>
+              <div class="tag-row">
+                <span class="tag category">D 类：错误恢复</span>
+                <span class="tag">AgentBench</span>
+              </div>
+            </div>
+            <div class="score">
+              <span class="from">34.8</span> -> <span class="to">75.0</span>
+              <small>+40.2 points</small>
+            </div>
+          </div>
+          <div class="compare">
+            <div class="pane baseline">
+              <h4>Baseline 失败点</h4>
+              <p>找不到输入文件后直接放弃，没有生成图表或 markdown 说明。</p>
+            </div>
+            <div class="pane control">
+              <h4>+Control 如何修复</h4>
+              <p>继续定位非标准目录中的文件，处理缺失依赖，并生成要求的产物。</p>
+            </div>
+          </div>
+          <div class="evidence">
+            <a href="../../benchmarks/agentbench-openclaw/tasks/error-handling/missing-dependency/task.yaml">任务定义 / Task definition</a>
+            <a href="../../outputs/agentbench/glm-4.7/missing-dependency/result.json">Baseline 结果</a>
+            <a href="../../outputs/harness/control/agentbench/glm-4.7/missing-dependency/result.json">+Control 结果</a>
+            <a href="../../outputs/harness/control/agentbench/glm-4.7/missing-dependency/agent_result.json">+Control 轨迹 / trajectory</a>
+          </div>
+        </article>
+
+        <article class="card">
+          <div class="card-head">
+            <div>
+              <h3>repo-refactor：多步代码仓库重构 / Multi-step Repository Refactor</h3>
+              <div class="tag-row">
+                <span class="tag category">A/B/D 类：多步执行控制</span>
+                <span class="tag">AgentBench</span>
+              </div>
+            </div>
+            <div class="score">
+              <span class="from">54.2</span> -> <span class="to">90.0</span>
+              <small>+35.8 points</small>
+            </div>
+          </div>
+          <div class="compare">
+            <div class="pane baseline">
+              <h4>Baseline 失败点</h4>
+              <p>理解了重构方向，但漏掉一个必需模块，没有更新 imports/tests，没有删除旧文件，也没有提交。</p>
+            </div>
+            <div class="pane control">
+              <h4>+Control 如何修复</h4>
+              <p>按计划完成所有重构步骤：创建模块、更新调用方和测试、验证结果、删除旧文件并提交。</p>
+            </div>
+          </div>
+          <div class="evidence">
+            <a href="../../benchmarks/agentbench-openclaw/tasks/multi-step/repo-refactor/task.yaml">任务定义 / Task definition</a>
+            <a href="../../outputs/agentbench/glm-4.7/repo-refactor/result.json">Baseline 结果</a>
+            <a href="../../outputs/harness/control/agentbench/glm-4.7/repo-refactor/result.json">+Control 结果</a>
+            <a href="../../outputs/harness/control/agentbench/glm-4.7/repo-refactor/agent_result.json">+Control 轨迹 / trajectory</a>
+          </div>
+        </article>
+      </div>
+    </section>
+
+    <section>
+      <h2>阅读说明 / Reading Note</h2>
+      <p class="note">
+        前两个案例是论文附录中已经描述的 +Control 例子；其余案例是本地结果中挑出的强提升候选。
+        页面中的类别标签主要用于展示和讲解，若要作为正式论文声明，应再与论文的官方标注表对齐。
+      </p>
+    </section>
+  </main>
+</body>
+</html>
