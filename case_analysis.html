@@ -1,0 +1,539 @@
+<!-- index: case分析 | 2026-06-11 | TIR-Bench / XSkill / AceSkill 失败案例分析与可视化 -->
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>case分析</title>
+<meta name="description" content="TIR-Bench / XSkill / AceSkill 失败案例分析与可视化">
+<style>
+:root {
+  --ink: #18202f;
+  --muted: #667085;
+  --line: #d8dde8;
+  --paper: #f6f7fb;
+  --panel: #ffffff;
+  --blue: #2764c9;
+  --green: #138a5b;
+  --red: #c23b3b;
+  --amber: #b26b00;
+  --teal: #087a82;
+  --violet: #6652c7;
+}
+* { box-sizing: border-box; }
+body {
+  margin: 0;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC", "Microsoft YaHei", sans-serif;
+  color: var(--ink);
+  background: var(--paper);
+}
+button, select { font: inherit; }
+.shell { max-width: 1280px; margin: 0 auto; padding: 22px; }
+.topbar {
+  background: #152033;
+  color: white;
+  border-bottom: 4px solid #2c7a7b;
+}
+.topbar-inner {
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: 18px 22px;
+  display: flex;
+  align-items: center;
+  gap: 18px;
+  justify-content: space-between;
+}
+h1 { margin: 0; font-size: 22px; letter-spacing: 0; }
+.subtitle { margin: 4px 0 0; color: #c8d2e4; font-size: 13px; }
+.nav-links { display: flex; gap: 10px; flex-wrap: wrap; }
+.nav-links a {
+  color: white;
+  text-decoration: none;
+  font-size: 13px;
+  border: 1px solid rgba(255,255,255,.25);
+  border-radius: 6px;
+  padding: 7px 10px;
+}
+.summary-grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(150px, 1fr));
+  gap: 12px;
+  margin: 18px 0;
+}
+.metric {
+  background: var(--panel);
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  padding: 14px;
+}
+.metric-value { font-size: 26px; font-weight: 750; line-height: 1; }
+.metric-label { margin-top: 6px; color: var(--muted); font-size: 12px; }
+.layout {
+  display: grid;
+  grid-template-columns: 330px minmax(0, 1fr);
+  gap: 16px;
+  align-items: start;
+}
+.side, .main-panel, .band {
+  background: var(--panel);
+  border: 1px solid var(--line);
+  border-radius: 8px;
+}
+.side { padding: 14px; position: sticky; top: 12px; }
+.section-title {
+  margin: 0 0 10px;
+  font-size: 14px;
+  font-weight: 750;
+}
+.filters { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 12px; }
+.filter-btn {
+  border: 1px solid var(--line);
+  background: #fff;
+  color: var(--ink);
+  border-radius: 6px;
+  padding: 6px 8px;
+  cursor: pointer;
+  font-size: 12px;
+}
+.filter-btn.active { border-color: var(--blue); color: var(--blue); background: #eef4ff; }
+.case-list { display: grid; gap: 8px; }
+.case-button {
+  text-align: left;
+  border: 1px solid var(--line);
+  background: #fff;
+  border-radius: 7px;
+  padding: 10px;
+  cursor: pointer;
+}
+.case-button.active { border-color: var(--blue); box-shadow: inset 3px 0 0 var(--blue); }
+.case-id { font-family: Menlo, Consolas, monospace; font-size: 12px; color: var(--blue); font-weight: 700; }
+.case-name { margin-top: 4px; font-size: 14px; font-weight: 700; }
+.case-meta { margin-top: 6px; color: var(--muted); font-size: 12px; line-height: 1.35; }
+.tag {
+  display: inline-flex;
+  align-items: center;
+  border-radius: 999px;
+  padding: 2px 8px;
+  font-size: 11px;
+  font-weight: 700;
+  border: 1px solid transparent;
+}
+.tag.success { color: var(--green); background: #e8f6ef; border-color: #bfe6d1; }
+.tag.fail { color: var(--red); background: #fff0ef; border-color: #f2c2bd; }
+.tag.warn { color: var(--amber); background: #fff6e8; border-color: #efd2a4; }
+.tag.info { color: var(--teal); background: #e9f7f8; border-color: #b9e1e4; }
+.main-panel { overflow: hidden; }
+.case-head {
+  padding: 18px;
+  border-bottom: 1px solid var(--line);
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 18px;
+}
+.case-head h2 { margin: 4px 0 8px; font-size: 24px; letter-spacing: 0; }
+.question { white-space: pre-line; color: #394154; line-height: 1.5; font-size: 14px; }
+.answer-box {
+  min-width: 190px;
+  display: grid;
+  gap: 8px;
+  align-content: start;
+}
+.answer-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  border: 1px solid var(--line);
+  border-radius: 7px;
+  padding: 9px 10px;
+  font-size: 13px;
+}
+.answer-row strong { font-size: 18px; }
+.content { padding: 18px; display: grid; gap: 16px; }
+.run-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+}
+.run {
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  padding: 13px;
+  background: #fff;
+}
+.run-title {
+  display: flex;
+  justify-content: space-between;
+  gap: 10px;
+  align-items: center;
+  margin-bottom: 10px;
+}
+.run-title strong { font-size: 14px; }
+.run-note { color: var(--muted); font-size: 12px; line-height: 1.45; }
+.bar-wrap {
+  margin: 10px 0 7px;
+  height: 12px;
+  background: #edf0f6;
+  border-radius: 99px;
+  overflow: hidden;
+}
+.bar { height: 100%; width: var(--w); background: var(--c); }
+.timeline {
+  display: grid;
+  gap: 8px;
+}
+.step {
+  display: grid;
+  grid-template-columns: 86px minmax(0, 1fr);
+  gap: 10px;
+  align-items: start;
+  border-bottom: 1px solid #edf0f6;
+  padding-bottom: 8px;
+}
+.step:last-child { border-bottom: none; padding-bottom: 0; }
+.step-label { color: var(--muted); font-size: 12px; font-family: Menlo, Consolas, monospace; }
+.step-text { font-size: 13px; line-height: 1.45; }
+.insight-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 12px;
+}
+.insight {
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  padding: 13px;
+  background: #fff;
+}
+.insight h3 { margin: 0 0 8px; font-size: 14px; }
+.insight p { margin: 0; color: #394154; line-height: 1.5; font-size: 13px; }
+.band { margin-top: 16px; padding: 16px; }
+.type-chart {
+  display: grid;
+  grid-template-columns: 170px minmax(0, 1fr) 48px;
+  gap: 10px;
+  align-items: center;
+  margin-top: 10px;
+}
+.type-label { font-size: 13px; }
+.type-bar-bg { height: 18px; border-radius: 5px; background: #edf0f6; overflow: hidden; }
+.type-bar { height: 100%; width: var(--w); background: var(--c); }
+.type-count { font-family: Menlo, Consolas, monospace; font-size: 12px; color: var(--muted); }
+.flow {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 10px;
+  margin-top: 12px;
+}
+.flow-node {
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  padding: 12px;
+  background: #fff;
+  min-height: 92px;
+}
+.flow-node strong { display: block; margin-bottom: 6px; font-size: 13px; }
+.flow-node span { color: var(--muted); font-size: 12px; line-height: 1.4; }
+.footer-note {
+  color: var(--muted);
+  font-size: 12px;
+  line-height: 1.5;
+  margin-top: 16px;
+}
+@media (max-width: 900px) {
+  .summary-grid, .layout, .case-head, .run-grid, .insight-grid, .flow {
+    grid-template-columns: 1fr;
+  }
+  .side { position: static; }
+}
+@media (max-width: 640px) {
+  body { overflow-x: hidden; }
+  .topbar-inner {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 12px;
+  }
+  .nav-links {
+    width: 100%;
+    display: grid;
+    grid-template-columns: 1fr;
+  }
+  .nav-links a {
+    text-align: center;
+    min-width: 0;
+  }
+  .shell { padding: 18px 14px; }
+  .case-head { gap: 14px; }
+  .answer-box { min-width: 0; }
+  .side, .main-panel, .metric, .band, .case-button, .filter-btn {
+    min-width: 0;
+  }
+  .filters {
+    display: grid;
+    grid-template-columns: 1fr;
+  }
+  .filter-btn {
+    white-space: normal;
+    line-height: 1.25;
+  }
+  .answer-row {
+    align-items: flex-start;
+  }
+  .answer-row strong {
+    overflow-wrap: anywhere;
+    text-align: right;
+  }
+}
+</style>
+</head>
+<body>
+<header class="topbar">
+  <div class="topbar-inner">
+    <div>
+      <h1>case分析</h1>
+      <p class="subtitle">Skills 纠偏机制、失败类型和关键 case 的交互式复盘</p>
+    </div>
+  </div>
+</header>
+
+<main class="shell">
+  <section class="summary-grid" aria-label="实验摘要">
+    <div class="metric"><div class="metric-value">100</div><div class="metric-label">Dashboard train samples</div></div>
+    <div class="metric"><div class="metric-value">200</div><div class="metric-label">Dashboard test samples</div></div>
+    <div class="metric"><div class="metric-value">4</div><div class="metric-label">Trace runs inspected</div></div>
+    <div class="metric"><div class="metric-value">1 / 8</div><div class="metric-label">Trace-level correct answers</div></div>
+  </section>
+
+  <section class="layout">
+    <aside class="side">
+      <h2 class="section-title">Case Filter</h2>
+      <div class="filters" id="filters"></div>
+      <div class="case-list" id="caseList"></div>
+    </aside>
+
+    <section class="main-panel" id="casePanel" aria-live="polite"></section>
+  </section>
+
+  <section class="band">
+    <h2 class="section-title">错误类型分布</h2>
+    <div id="typeChart"></div>
+  </section>
+
+  <section class="band">
+    <h2 class="section-title">Skills 纠偏流程</h2>
+    <div class="flow">
+      <div class="flow-node"><strong>1. 定义目标实例</strong><span>先判断 large、small、in front、on right 等限定词，避免框错对象。</span></div>
+      <div class="flow-node"><strong>2. 工具估计并可视化</strong><span>使用 HSV、GrabCut、flood fill、投影分割等工具，但必须检查 mask 是否可信。</span></div>
+      <div class="flow-node"><strong>3. 冲突时切换几何</strong><span>若工具数值大幅冲突，使用 bounding box、ellipse、fill factor 做 footprint 估计。</span></div>
+      <div class="flow-node"><strong>4. 映射选项并停止</strong><span>当数值接近选项且证据合理，立刻输出选项标签，避免继续调参导致失败。</span></div>
+    </div>
+    <p class="footer-note">本页是对 TIR-Bench trace 的轻量可视化摘要，聚焦 Skills 纠偏机制、失败类型和关键 case。</p>
+  </section>
+</main>
+
+<script>
+const cases = [
+  {
+    id: "refcoco_838",
+    title: "披萨占比",
+    type: "分割过度调参",
+    status: "Ace-Skill 做对",
+    target: "pizza",
+    question: "Which value is closest to the proportion of the image occupied by pizza?\nA: 79%  B: 55%  C: 87%  D: 63%  E: 47%  F: 71%",
+    gt: "D / 63%",
+    final: "Ace-Skill Train: D",
+    lesson: "工具分割反复冲突时，回退到椭圆 footprint。约 60.5% 最接近 63%。",
+    fix: "识别 mask 失效，使用 bbox / ellipse / fill factor，并立即映射选项。",
+    runs: [
+      {name:"XSkill Train", result:"错误", turns:8, pct:0, color:"var(--red)", note:"Otsu、HSV、flood fill、GrabCut 在 41.9%、59.4%、64.9%、88.9%、95.8% 间摇摆，最终未输出答案。"},
+      {name:"Ace-Skill Train", result:"正确", turns:4, pct:100, color:"var(--green)", note:"转向几何估计：pi * 225 * 150 / (500 * 350) ≈ 60.5%，选择 D。"}
+    ],
+    timeline: [
+      ["XSkill", "先得到 41.56%，漏掉亮色芝士。"],
+      ["XSkill", "背景排除过宽，得到 88.92% 和 95.83%。"],
+      ["XSkill", "出现 64.86% 但没有停止并映射到 D。"],
+      ["Ace", "识别自动分割不稳，改用椭圆面积估计。"],
+      ["Ace", "60.5% 与 D:63% 最近，输出 D。"]
+    ]
+  },
+  {
+    id: "refcoco_249",
+    title: "大泰迪熊占比",
+    type: "输出格式失败",
+    status: "未做对",
+    target: "large teddy bear",
+    question: "Which value is closest to the proportion occupied by large teddy bear?\nA: 75%  B: 67%  C: 59%  D: 51%  E: 43%  F: 83%",
+    gt: "C / 59%",
+    final: "Error: Could not parse model response",
+    lesson: "多轮估计偏低且最后进入未完成代码块。即使有候选数值，也没有稳定输出选项。",
+    fix: "把低估 mask 当下界，转向完整主体 footprint；最后强制同步 <answer>C</answer>。",
+    runs: [
+      {name:"XSkill Train", result:"错误", turns:4, pct:0, color:"var(--red)", note:"39.31%、42.20%、34.83%、32.71% 均偏低，最终输出不可解析。"},
+      {name:"Skill 应用方向", result:"可修复", turns:0, pct:65, color:"var(--amber)", note:"需要 E2/E13 低估纠偏和 E12 答案格式约束。"}
+    ],
+    timeline: [
+      ["turn 0", "颜色阈值得到 39.31%。"],
+      ["turn 1", "调整后得到 42.20%，仍偏低。"],
+      ["turn 2", "只覆盖局部浅色区域，降到 34.83%。"],
+      ["turn 3", "进入未完成代码块，解析失败。"]
+    ]
+  },
+  {
+    id: "refcoco_524",
+    title: "小玩具占比",
+    type: "近答案不停止",
+    status: "未做对",
+    target: "small toy",
+    question: "Which value is closest to the proportion occupied by small toy?\nA: 15%  B: 39%  C: 47%  D: 23%  E: 31%  F: 7%",
+    gt: "A / 15%",
+    final: "Error: Reached max turns",
+    lesson: "XSkill 曾得到 16.49%，已足够接近 A，但继续调参。Ace-Skill 也在 7.5%-21.2% 间摇摆。",
+    fix: "加入接近选项停止规则：差距小于 2-3% 且 mask 合理时立即输出。",
+    runs: [
+      {name:"XSkill Infer", result:"错误", turns:8, pct:0, color:"var(--red)", note:"垂直投影得到 12.70%，ROI 估计得到 16.49%，但没有输出 A。"},
+      {name:"Ace-Skill Infer", result:"错误", turns:20, pct:0, color:"var(--red)", note:"在 7.5%、8.4%、10-12%、21.2% 间继续搜索，最终超回合。"}
+    ],
+    timeline: [
+      ["XSkill", "用蓝色背景分离前景，再按垂直投影拆两个玩具。"],
+      ["XSkill", "得到 12.70% 与 16.49%，后者接近 A。"],
+      ["Ace", "几何椭圆估计一度偏向 F:7%。"],
+      ["Ace", "多种 mask 冲突，缺少停止条件。"]
+    ]
+  },
+  {
+    id: "refcoco_921",
+    title: "前景斑马占比",
+    type: "几何估计误用",
+    status: "未做对",
+    target: "zebra in front",
+    question: "Which value is closest to the proportion occupied by zebra in front?\nA: 32%  B: 16%  C: 8%  D: 0%  E: 40%  F: 24%",
+    gt: "B / 16%",
+    final: "Ace-Skill Infer: F / 24%",
+    lesson: "模型使用了过大的 bbox 和过高 fill factor，把前景实例、后景实例和负空间混在一起。",
+    fix: "实例限定词必须先落到 tight ROI；几何估计只能作为上界，发现 16-17% 证据时触发 cross-check。",
+    runs: [
+      {name:"XSkill Infer", result:"错误", turns:8, pct:0, color:"var(--red)", note:"一度出现 16.98% 的有用信号，但未映射为 B。"},
+      {name:"Ace-Skill Infer", result:"错误", turns:7, pct:0, color:"var(--red)", note:"bbox 约 35%，fill factor 0.70 得 24.5%，最终误选 F。"}
+    ],
+    timeline: [
+      ["XSkill", "局部分割曾接近 16-17%。"],
+      ["Ace", "估计 bbox 为 50% 宽、70% 高。"],
+      ["Ace", "使用 0.70 fill factor 得到 24.5%。"],
+      ["问题", "ROI 没有只框前景斑马，导致几何估计上界被当成答案。"]
+    ]
+  }
+];
+
+const filters = ["全部", ...Array.from(new Set(cases.map(c => c.type)))];
+let activeFilter = "全部";
+let activeCase = cases[0].id;
+
+function tagClass(text) {
+  if (text.includes("正确") || text.includes("做对")) return "success";
+  if (text.includes("可修复")) return "warn";
+  if (text.includes("错误") || text.includes("未做对")) return "fail";
+  return "info";
+}
+
+function renderFilters() {
+  const el = document.getElementById("filters");
+  el.innerHTML = filters.map(f => `<button class="filter-btn ${f === activeFilter ? "active" : ""}" onclick="setFilter('${f}')">${f}</button>`).join("");
+}
+
+function setFilter(filter) {
+  activeFilter = filter;
+  const visible = getVisibleCases();
+  if (!visible.some(c => c.id === activeCase)) activeCase = visible[0]?.id || cases[0].id;
+  render();
+}
+
+function selectCase(id) {
+  activeCase = id;
+  render();
+}
+
+function getVisibleCases() {
+  return activeFilter === "全部" ? cases : cases.filter(c => c.type === activeFilter);
+}
+
+function renderCaseList() {
+  const el = document.getElementById("caseList");
+  el.innerHTML = getVisibleCases().map(c => `
+    <button class="case-button ${c.id === activeCase ? "active" : ""}" onclick="selectCase('${c.id}')">
+      <div class="case-id">${c.id}</div>
+      <div class="case-name">${c.title}</div>
+      <div class="case-meta"><span class="tag ${tagClass(c.status)}">${c.status}</span> ${c.type}</div>
+    </button>
+  `).join("");
+}
+
+function renderPanel() {
+  const c = cases.find(x => x.id === activeCase) || cases[0];
+  const el = document.getElementById("casePanel");
+  el.innerHTML = `
+    <div class="case-head">
+      <div>
+        <div class="case-id">${c.id}</div>
+        <h2>${c.title}</h2>
+        <div class="question">${c.question}</div>
+      </div>
+      <div class="answer-box">
+        <div class="answer-row"><span>标准答案</span><strong>${c.gt}</strong></div>
+        <div class="answer-row"><span>模型输出</span><strong>${c.final}</strong></div>
+        <div class="answer-row"><span>错误类型</span><span class="tag ${tagClass(c.status)}">${c.type}</span></div>
+      </div>
+    </div>
+    <div class="content">
+      <div class="run-grid">
+        ${c.runs.map(r => `
+          <article class="run">
+            <div class="run-title"><strong>${r.name}</strong><span class="tag ${tagClass(r.result)}">${r.result}</span></div>
+            <div class="bar-wrap" aria-hidden="true"><div class="bar" style="--w:${r.pct}%;--c:${r.color}"></div></div>
+            <div class="run-note">turns: ${r.turns || "-"} · ${r.note}</div>
+          </article>
+        `).join("")}
+      </div>
+      <div class="insight-grid">
+        <div class="insight"><h3>目标</h3><p>${c.target}</p></div>
+        <div class="insight"><h3>关键问题</h3><p>${c.lesson}</p></div>
+        <div class="insight"><h3>纠偏建议</h3><p>${c.fix}</p></div>
+      </div>
+      <div class="run">
+        <div class="run-title"><strong>轨迹摘要</strong><span class="tag info">${c.timeline.length} steps</span></div>
+        <div class="timeline">
+          ${c.timeline.map(([label, text]) => `<div class="step"><div class="step-label">${label}</div><div class="step-text">${text}</div></div>`).join("")}
+        </div>
+      </div>
+    </div>
+  `;
+}
+
+function renderTypeChart() {
+  const counts = {};
+  cases.forEach(c => counts[c.type] = (counts[c.type] || 0) + 1);
+  const colors = {
+    "分割过度调参": "var(--blue)",
+    "输出格式失败": "var(--red)",
+    "近答案不停止": "var(--amber)",
+    "几何估计误用": "var(--teal)"
+  };
+  const max = Math.max(...Object.values(counts));
+  document.getElementById("typeChart").innerHTML = Object.entries(counts).map(([type, count]) => `
+    <div class="type-chart">
+      <div class="type-label">${type}</div>
+      <div class="type-bar-bg"><div class="type-bar" style="--w:${count / max * 100}%;--c:${colors[type] || "var(--violet)"}"></div></div>
+      <div class="type-count">${count} case</div>
+    </div>
+  `).join("");
+}
+
+function render() {
+  renderFilters();
+  renderCaseList();
+  renderPanel();
+  renderTypeChart();
+}
+
+render();
+</script>
+</body>
+</html>
