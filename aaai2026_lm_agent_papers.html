@@ -1,0 +1,351 @@
+<!-- index: AAAI 2026 LM Agent 论文概览 | 2026-07-23 | AAAI 2026 大模型 Agent 论文卡片式概览，覆盖 Agent 架构 / 多智能体 / GUI / 工具使用 / 安全 / 推理 / 搜索 / 记忆八大方向 -->
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AAAI 2026 LM Agent 论文概览</title>
+<style>
+:root{--bg:#f0f4f8;--card-bg:#ffffff;--text:#1a202c;--text-secondary:#4a5568;--border:#e2e8f0;--primary:#2563eb;--primary-light:#dbeafe;--shadow:0 4px 6px -1px rgba(0,0,0,0.1),0 2px 4px -1px rgba(0,0,0,0.06);--shadow-lg:0 10px 15px -3px rgba(0,0,0,0.1),0 4px 6px -2px rgba(0,0,0,0.05);--radius:12px;--header-bg:linear-gradient(135deg,#1e3a8a 0%,#2563eb 50%,#3b82f6 100%)}
+[data-theme="dark"]{--bg:#0f172a;--card-bg:#1e293b;--text:#e2e8f0;--text-secondary:#94a3b8;--border:#334155;--primary:#3b82f6;--primary-light:#1e3a5f;--shadow:0 4px 6px -1px rgba(0,0,0,0.3);--shadow-lg:0 10px 15px -3px rgba(0,0,0,0.4);--header-bg:linear-gradient(135deg,#0f172a 0%,#1e3a8a 50%,#1e40af 100%)}
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Noto Sans SC",sans-serif;background:var(--bg);color:var(--text);transition:all 0.3s ease;line-height:1.6}
+.header{background:var(--header-bg);color:#fff;padding:48px 24px 40px;text-align:center;position:relative}
+.header h1{font-size:2.2rem;font-weight:800;margin-bottom:8px;letter-spacing:-0.5px}
+.header p{font-size:1.05rem;opacity:0.9}
+.theme-toggle{position:fixed;top:16px;right:16px;z-index:1000;background:var(--card-bg);border:2px solid var(--border);border-radius:50%;width:44px;height:44px;cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:1.3rem;box-shadow:var(--shadow);transition:all 0.3s}
+.theme-toggle:hover{transform:scale(1.1);box-shadow:var(--shadow-lg)}
+.filter-bar{position:sticky;top:0;z-index:100;background:var(--card-bg);border-bottom:1px solid var(--border);padding:12px 24px;display:flex;gap:8px;overflow-x:auto;box-shadow:var(--shadow)}
+.filter-btn{padding:6px 16px;border-radius:20px;border:1.5px solid var(--border);background:transparent;color:var(--text-secondary);cursor:pointer;font-size:0.88rem;white-space:nowrap;transition:all 0.2s;font-weight:500}
+.filter-btn:hover{border-color:var(--primary);color:var(--primary)}
+.filter-btn.active{background:var(--primary);color:#fff;border-color:var(--primary)}
+.container{max-width:1400px;margin:0 auto;padding:24px}
+.grid{display:grid;grid-template-columns:repeat(2,1fr);gap:24px}
+@media(max-width:900px){.grid{grid-template-columns:1fr}.header h1{font-size:1.6rem}}
+.card{background:var(--card-bg);border-radius:var(--radius);box-shadow:var(--shadow);overflow:hidden;transition:all 0.3s;border:1px solid var(--border)}
+.card:hover{box-shadow:var(--shadow-lg);transform:translateY(-2px)}
+.card-body{padding:20px 24px}
+.card-title{font-size:1.1rem;font-weight:700;margin-bottom:6px;line-height:1.4}
+.card-title a{color:var(--primary);text-decoration:none}
+.card-title a:hover{text-decoration:underline}
+.card-authors{font-size:0.82rem;color:var(--text-secondary);margin-bottom:10px;line-height:1.4}
+.card-tags{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:10px}
+.tag{padding:2px 10px;border-radius:12px;font-size:0.75rem;font-weight:600;color:#fff}
+.tag-arch{background:#8b5cf6}.tag-multi{background:#ec4899}.tag-gui{background:#f59e0b}.tag-tool{background:#10b981}.tag-safety{background:#ef4444}.tag-reason{background:#06b6d4}.tag-search{background:#f97316}.tag-memory{background:#6366f1}
+.card-summary{font-size:0.9rem;color:var(--text-secondary);margin-bottom:14px;line-height:1.6}
+.figures{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+@media(max-width:600px){.figures{grid-template-columns:1fr}}
+.fig-item{text-align:center}
+.fig-item img{width:100%;border-radius:8px;border:1px solid var(--border);cursor:pointer;transition:transform 0.2s;max-height:220px;object-fit:contain;background:#f8fafc}
+[data-theme="dark"] .fig-item img{background:#0f172a}
+.fig-item img:hover{transform:scale(1.02)}
+.fig-label{font-size:0.78rem;color:var(--text-secondary);margin-top:4px;font-weight:500}
+.fig-placeholder{width:100%;height:140px;border-radius:8px;background:var(--primary-light);display:flex;align-items:center;justify-content:center;color:var(--primary);font-size:0.85rem;border:1px dashed var(--primary)}
+.footer{text-align:center;padding:32px 24px;color:var(--text-secondary);font-size:0.85rem;border-top:1px solid var(--border);margin-top:32px}
+.lightbox{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.85);z-index:2000;align-items:center;justify-content:center;cursor:pointer}
+.lightbox.show{display:flex}
+.lightbox img{max-width:92%;max-height:92%;border-radius:8px;box-shadow:0 25px 50px rgba(0,0,0,0.5)}
+.count-badge{background:var(--primary);color:#fff;border-radius:10px;padding:2px 8px;font-size:0.75rem;margin-left:6px}
+</style>
+</head>
+<body>
+<button class="theme-toggle" onclick="toggleTheme()" title="切换主题">🌓</button>
+<div class="lightbox" id="lightbox" onclick="this.classList.remove('show')"><img id="lb-img" src="" alt=""></div>
+
+<header class="header">
+<h1>AAAI 2026 LM Agent 论文概览</h1>
+<p>第40届AAAI人工智能会议 | 2026年1月 | 新加坡</p>
+</header>
+
+<div class="filter-bar" id="filterBar">
+<button class="filter-btn active" data-cat="all">全部 <span class="count-badge" id="count-all"></span></button>
+<button class="filter-btn" data-cat="arch">Agent架构</button>
+<button class="filter-btn" data-cat="multi">Multi-Agent</button>
+<button class="filter-btn" data-cat="gui">GUI Agent</button>
+<button class="filter-btn" data-cat="tool">工具使用</button>
+<button class="filter-btn" data-cat="safety">Agent安全</button>
+<button class="filter-btn" data-cat="reason">Agent推理</button>
+<button class="filter-btn" data-cat="search">搜索Agent</button>
+<button class="filter-btn" data-cat="memory">Agent记忆</button>
+</div>
+
+<div class="container"><div class="grid" id="paperGrid"></div></div>
+
+<footer class="footer">
+<p>数据来源：arXiv.org | 论文图片版权归原作者所有 | 仅供学术交流参考</p>
+<p style="margin-top:6px">AAAI 2026 LM Agent Papers Overview — 自动生成页面</p>
+</footer>
+
+<script>
+const papers = [
+{
+  title: "AgentSwift: Efficient LLM Agent Design via Value-guided Hierarchical Search",
+  authors: "Yu Li, Lehui Li, Zhihao Wu, Qingmin Liao, Jianye Hao, Kun Shao, Fengli Xu",
+  arxiv: "https://arxiv.org/abs/2506.06017",
+  cats: ["arch"],
+  summary: "提出一种基于价值引导的层次化搜索框架，自动优化LLM Agent的工作流和功能组件。通过训练价值模型预测Agent性能，结合MCTS不确定性引导的层次扩展策略，在7个基准上平均提升8.34%。",
+  fig1: "https://arxiv.org/html/2506.06017/x1.png",
+  fig1cap: "框架概览：层次化搜索空间 + MCTS + 价值模型",
+  fig2: "https://arxiv.org/html/2506.06017/x2.png",
+  fig2cap: "数据集构建流程"
+},
+{
+  title: "A2Flow: Automating Agentic Workflow Generation via Self-Adaptive Abstraction Operators",
+  authors: "Mingming Zhao, Xiaokang Wei, Yuanqi Shao, Kaiwen Zhou, Lin Yang, Siwei Rao, Junhui Zhan, Zhitang Chen",
+  arxiv: "https://arxiv.org/abs/2511.20693",
+  cats: ["arch"],
+  summary: "提出自适应抽象算子自动生成方法，从专家数据中提炼高度集成的操作算子，并引入算子记忆机制增强上下文感知执行。在8个基准数据集上持续优于SOTA方法。",
+  fig1: "https://arxiv.org/html/2511.20693/x1.png",
+  fig1cap: "与现有方法的对比：自适应算子 + 算子记忆",
+  fig2: "https://arxiv.org/html/2511.20693/x2.png",
+  fig2cap: "框架概览：三阶段算子生成 + MCTS工作流搜索"
+},
+{
+  title: "InfoSeeker: A Scalable Hierarchical Parallel Agent Framework for Web Information Seeking",
+  authors: "Ka Yiu Lee, Yuxuan Huang, Zhiyuan He, Huichi Zhou, Weilin Luo, Kun Shao, Meng Fang, Jun Wang",
+  arxiv: "https://arxiv.org/abs/2604.02971",
+  cats: ["search","multi"],
+  summary: "提出三层层次化并行Agent框架（Host-Manager-Worker），通过MCP协议实现上下文隔离。在WideSearch上任务成功率提升66.7%，推理延迟加速3-5倍，超越Gemini和OpenAI Deep Research。",
+  fig1: "https://arxiv.org/html/2604.02971v1/figures/bar.png",
+  fig1cap: "BrowseComp-zh和WideSearch性能对比",
+  fig2: "https://arxiv.org/html/2604.02971v1/x1.png",
+  fig2cap: "InfoSeeker三层架构概览"
+},
+{
+  title: "REMem: Reasoning with Episodic Memory in Language Agents",
+  authors: "Yiheng Shu, Saisri Padmaja Jonnalagedda, Xiang Gao, Bernal Jiménez Gutiérrez, Weijian Qi, Kamalika Das, Huan Sun, Yu Su",
+  arxiv: "https://arxiv.org/abs/2602.13530",
+  cats: ["memory","reason"],
+  summary: "提出基于情景记忆的语言Agent推理框架REMem，构建混合记忆图存储事件要旨与时序事实。在情景回忆和推理任务上分别提升3.4%和13.4%，是唯一在Test of Time基准上超过90%精确匹配的方法。",
+  fig1: "https://arxiv.org/html/2602.13530v3/x1.png",
+  fig1cap: "情景记忆评估：时间线锚定 + 渐进能力测试",
+  fig2: "https://arxiv.org/html/2602.13530v3/x2.png",
+  fig2cap: "REMem概览：索引阶段 + Agent推理阶段"
+},
+{
+  title: "S-DAG: A Subject-Based Directed Acyclic Graph for Multi-Agent Heterogeneous Reasoning",
+  authors: "Jiangwen Dong, Zehui Lin, Wanyu Lin, Mingjin Zhang",
+  arxiv: "https://ojs.aaai.org/index.php/AAAI/article/view/40180",
+  cats: ["multi","reason"],
+  summary: "提出基于主题的有向无环图框架S-DAG，用BERT编码器理解问题语义，图神经网络（GNN）识别相关主题并生成依赖图，为每个主题匹配最擅长的专家模型进行结构化协作推理。14个中小专家模型组成的S-DAG（平均准确率59.73%）超越GPT-4o-mini（58.52%）和MoE方法（54.56%），在MMLU-Pro、GPQA、MedMCQA多主题基准上表现突出。",
+  fig1: "https://i-blog.csdnimg.cn/img_convert/835d65403a5ffc66c75924466c7126ec.png",
+  fig1cap: "现有方法 vs S-DAG主题级精准分工对比：单模型硬扛 vs 无序协作 vs 主题级分工",
+  fig2: "https://i-blog.csdnimg.cn/img_convert/1067478402ab9aead86ed8b6f97003a0.png",
+  fig2cap: "S-DAG框架：GNN主题识别 + 依赖图构建 + 专家模型匹配与协同推理"
+},
+{
+  title: "AutoGLM: Autonomous Foundation Agents for GUIs",
+  authors: "Xiao Liu, Bo Qin, Dongzhu Liang, Guang Dong, Hanyu Lai, Hanchen Zhang 等 (Zhipu AI & Tsinghua)",
+  arxiv: "https://arxiv.org/abs/2411.00820",
+  cats: ["gui"],
+  summary: "基于ChatGLM构建的基础Agent系列，面向Web浏览器和Android两大GUI场景。提出中间接口设计实现规划与定位分离，结合自进化在线RL课程学习，实现真实环境中的自主GUI操作。",
+  fig1: "https://arxiv.org/html/2411.00820/extracted/5959967/figs/Android_Demo.jpg",
+  fig1cap: "AutoGLM手机端演示：美团点咖啡",
+  fig2: "https://arxiv.org/html/2411.00820/extracted/5959967/figs/Web_Demo.jpg",
+  fig2cap: "AutoGLM网页端演示：OpenTable预约"
+},
+{
+  title: "TongUI: Internet-Scale Trajectories from Multimodal Web Tutorials for Generalized GUI Agents",
+  authors: "Bofei Zhang, Zirui Shang, Zhi Gao, Wang Zhang, Rui Xie, Xiaojian Ma, Tao Yuan, Xinxiao Wu, Song-Chun Zhu, Qing Li",
+  arxiv: "https://arxiv.org/abs/2504.12679",
+  cats: ["gui"],
+  summary: "构建百万级GUI轨迹数据集GUI-Net-1M（覆盖5大OS、280+应用），提出从网络多模态教程自动提取交互轨迹的框架。基于Qwen2.5-VL微调的TongUI Agent在跨平台GUI任务上展现强泛化能力。",
+  fig1: "https://arxiv.org/html/2504.12679/x1.png",
+  fig1cap: "TongUI框架：从网络多模态教程到GUI交互轨迹",
+  fig2: "https://arxiv.org/html/2504.12679/x2.png",
+  fig2cap: "GUI-Net-1M数据集统计：覆盖5大操作系统和280+应用"
+},
+{
+  title: "Prune4Web: DOM Tree Pruning Programming for Web Agent",
+  authors: "Jiayuan Zhang, Kaiquan Chen, Zhihao Lu, Enshen Zhou, Qian Yu, Jing Zhang",
+  arxiv: "https://arxiv.org/abs/2511.21398",
+  cats: ["gui","tool"],
+  summary: "将DOM处理从LLM阅读转为程序化剪枝，LLM生成可执行Python评分脚本动态过滤DOM元素，实现25-50倍候选元素缩减。底层任务定位准确率从46.8%飙升至88.28%。",
+  fig1: "https://arxiv.org/html/2511.21398/x1.png",
+  fig1cap: "现有多模态Web Agent vs Prune4Web范式对比",
+  fig2: "https://arxiv.org/html/2511.21398/x2.png",
+  fig2cap: "Prune4Web框架：规划→程序化过滤→动作定位"
+},
+{
+  title: "Co-EPG: A Framework for Co-Evolution of Planning and Grounding in Autonomous GUI Agents",
+  authors: "Yuan Zhao, Hualei Zhu, Tingyu Jiang, Shen Li, Xiaohang Xu, Hao Henry Wang",
+  arxiv: "https://arxiv.org/abs/2511.10705",
+  cats: ["gui"],
+  summary: "提出Planning-Grounding协同进化自迭代框架，Grounding模型通过奖励引导Planning策略探索，优化后的Planning模型生成高质量数据反哺Grounding。在Multimodal-Mind2Web(58.4%)和AndroidControl(83.1%)上超越SOTA。",
+  fig1: "https://arxiv.org/html/2511.10705/x1.png",
+  fig1cap: "Co-EPG框架：Planning与Grounding协同进化循环",
+  fig2: "https://arxiv.org/html/2511.10705/x2.png",
+  fig2cap: "自迭代进化机制在Multimodal-Mind2Web上的效果"
+},
+{
+  title: "AutoTool: Efficient Tool Selection for Large Language Model Agents",
+  authors: "Jingyi Jia, Qinbin Li",
+  arxiv: "https://arxiv.org/abs/2511.14650",
+  cats: ["tool"],
+  summary: "提出基于图的自动工具选择框架AutoTool，利用工具使用惯性（tool usage inertia）经验性观察，从历史Agent轨迹构建有向图建模工具选择模式。在保持竞争性任务完成率的同时将推理成本降低最高30%。",
+  fig1: "https://arxiv.org/html/2511.14650/x1.png",
+  fig1cap: "工具后继分布：展示工具使用惯性的低熵特征",
+  fig2: "https://arxiv.org/html/2511.14650/x2.png",
+  fig2cap: "AutoTool框架概览：惯性感知 + 参数填充 + 旁路LLM调用"
+},
+{
+  title: "MoralReason: Generalizable Moral Decision Alignment for LLM Agents Using Reasoning-Level RL",
+  authors: "AAAI 2026 Authors",
+  arxiv: "https://ojs.aaai.org/index.php/AAAI/article/view/41054",
+  cats: ["safety","reason"],
+  summary: "提出可泛化的道德决策对齐方法MoralReason，通过推理级别（Reasoning-Level）的强化学习让LLM Agent在复杂道德场景中做出符合人类价值观的决策。引入道德推理框架和可泛化的对齐策略，提升Agent的道德判断能力和决策一致性。",
+  fig1: "paper_figures/MoralReason_fig1.png",
+  fig1cap: "道德决策对齐框架",
+  fig2: "paper_figures/MoralReason_fig2.png",
+  fig2cap: "MoralReason泛化能力评估"
+},
+{
+  title: "ARTEM: Enhancing LLM Agents with Spatial-Temporal Episodic Memory",
+  authors: "C. H.-M. Tan, B. Subagdja, A. H. Tan",
+  arxiv: "https://ojs.aaai.org/index.php/AAAI/article/view/39773",
+  cats: ["memory"],
+  summary: "为LLM Agent引入时空情景记忆增强机制ARTEM，使Agent能够在时空中组织和检索过往经验。结合认知科学中的情景记忆理论，构建时空记忆编码、存储与检索机制，提升Agent在复杂动态环境中的长期决策能力和空间推理能力。",
+  fig1: "paper_figures/ARTEM_fig1.png",
+  fig1cap: "ARTEM时空情景记忆架构",
+  fig2: "paper_figures/ARTEM_fig2.png",
+  fig2cap: "Agent记忆检索与决策流程"
+},
+{
+  title: "BayesAgent: Bayesian Agentic Reasoning Under Uncertainty via Verbalized Probabilistic Graphical Modeling",
+  authors: "Hengguan Huang, Xing Shen, Guang-Yuan Hao, Songtao Wang, Lingfa Meng, Dianbo Liu, David Alejandro Duchene, Hao Wang, Samir Bhatt",
+  arxiv: "https://arxiv.org/abs/2406.05516",
+  cats: ["reason"],
+  summary: "首次将LLM Agent与概率图模型结合，提出语言化概率图建模(vPGM)框架。通过图结构发现、提示推理和不确定性预测三阶段，实现校准的贝叶斯推理，显著提升置信度校准和生成质量。",
+  fig1: "https://arxiv.org/html/2406.05516/x1.png",
+  fig1cap: "BayesAgent推理示例：识别无关信息并校准置信度",
+  fig2: "https://arxiv.org/html/2406.05516/x2.png",
+  fig2cap: "vPGM框架概览：图结构发现→提示推理→不确定性预测"
+},
+{
+  title: "RefRea: Reference-Guided Reasoning with Meta-Cognition for Accurate Language Model Agents",
+  authors: "Yuxiang Mai, Qiyue Yin, Wancheng Ni, Jianwei Guo, Xiaogang Ouyang, Pei Xu, Kaiqi Huang",
+  arxiv: "https://ojs.aaai.org/index.php/AAAI/article/view/40522",
+  cats: ["reason"],
+  summary: "提出参考引导与元认知推理方法RefRea，通过引入参考语言模型指导和校准推理模型行为。参考模型仅依赖经过验证的元认知进行一致性指导，推理模型利用验证和探索性元认知与环境交互，指导通过比较两者动作相似性实现。元认知模块反思动作历史和环境反馈生成总结性知识，提升推理准确性与稳定性。",
+  fig1: "paper_figures/RefRea_fig1.png",
+  fig1cap: "RefRea算法框架：推理模型+参考模型+元认知模块",
+  fig2: "paper_figures/RefRea_fig2.png",
+  fig2cap: "元认知引导的动作校正流程"
+},
+{
+  title: "MAGRPO: LLM Collaboration With Multi-Agent Reinforcement Learning (AAAI 2026 Outstanding Paper)",
+  authors: "Yujie Zhao, Lanxiang Hu, Yang Wang, Minmin Hou, Hao Zhang, Ke Ding, Jishen Zhao",
+  arxiv: "https://arxiv.org/abs/2510.11062",
+  cats: ["multi"],
+  summary: "🏆杰出论文奖。将LLM协作建模为合作式多Agent强化学习问题，提出MAGRPO算法（多Agent组相对策略优化）。在写作和编码协作中推理速度提升3倍，总回报提升90%+，展示了群体智能的自发角色分化。",
+  fig1: "https://arxiv.org/html/2510.11062/x1.png",
+  fig1cap: "MAS+AT-GRPO vs 单Agent+GRPO性能对比",
+  fig2: "https://arxiv.org/html/2510.11062/x2.png",
+  fig2cap: "MAGRPO多Agent协作工作流：跨领域的角色分工与RL训练"
+},
+{
+  title: "iMAD: Intelligent Multi-Agent Debate for Efficient and Accurate LLM Inference",
+  authors: "Wei Fan, JinYi Yoon, Bo Ji",
+  arxiv: "https://ojs.aaai.org/index.php/AAAI/article/view/40181",
+  cats: ["multi","reason"],
+  summary: "提出智能多Agent辩论框架iMAD，选择性触发MAD（仅在可能纠正错误答案时）。从单Agent结构化自我批评响应中提取41个可解释的语言和语义特征捕获犹豫线索，使用FocusCal损失训练的轻量级分类器进行零样本辩论决策。在6个(视觉)问答数据集上，token使用减少最高92%，同时准确率提升最高13.5%。",
+  fig1: "paper_figures/iMAD_fig1.png",
+  fig1cap: "iMAD多Agent辩论框架：选择性触发MAD + 自我批评特征提取",
+  fig2: "paper_figures/iMAD_fig2.png",
+  fig2cap: "FocusCal损失训练的辩论决策分类器流程"
+},
+{
+  title: "MCP-AgentBench: Evaluating Real-World Language Agent Performance with MCP-Mediated Tools",
+  authors: "Zikang Guo, Benfeng Xu, Chiwei Zhu, Wentao Hong, Xiaorui Wang, Zhendong Mao",
+  arxiv: "https://arxiv.org/abs/2509.09734",
+  cats: ["tool"],
+  summary: "提出基于MCP协议的真实世界Agent工具使用基准MCP-AgentBench，构建包含33个MCP服务器、188个工具和600个查询的评估框架。揭示主流LLM在复杂多步工具调用中的显著性能差异。",
+  fig1: "https://ar5iv.labs.arxiv.org/html/2509.09734/assets/figures/bfcl_vs_mcpagentbench_performance_diff.png",
+  fig1cap: "BFCL vs MCP-AgentBench：模型排名差异揭示现有基准局限性",
+  fig2: "https://ar5iv.labs.arxiv.org/html/2509.09734/assets/figures/MCP-AgentBench-pipeline.png",
+  fig2cap: "MCP-AgentBench构建与评估流程：服务器测试床 + 查询生成 + MCP-Eval"
+},
+{
+  title: "SafeSieve: From Heuristics to Experience in Progressive Pruning for LLM-based Multi-Agent Communication",
+  authors: "Ruijia Zhang, Xinyan Zhao, Ruixiang Wang, Sigen Chen, Guibin Zhang, An Zhang, Kun Wang, Qingsong Wen",
+  arxiv: "https://ojs.aaai.org/index.php/AAAI/article/view/40236",
+  cats: ["multi","safety"],
+  summary: "提出渐进式自适应多Agent通信剪枝算法SafeSieve，通过双机制设计：初期结合LLM语义评估实现启发式初始化，随后利用历史反馈进行经验驱动优化，通过0-extension聚类保持结构一致性同时移除低效连接。在6个基准上平均准确率94.01%，减少12.4%-27.8% token消耗，提示注入攻击下仅降1.23%，异构环境降低13.3%部署成本。",
+  fig1: "paper_figures/SafeSieve_fig1.png",
+  fig1cap: "SafeSieve渐进式通信剪枝框架：启发式初始化 + 经验驱动优化",
+  fig2: "paper_figures/SafeSieve_fig2.png",
+  fig2cap: "双机制优化：LLM语义评估启发 + 0-extension聚类经验驱动"
+},
+{
+  title: "OmniGAIA: A Comprehensive Benchmark for All-Modality AI Agents",
+  authors: "Xiaoxi Li, Wenxiang Jiao, Jiarui Jin, Shijian Wang, Guanting Dong, Jiajie Jin, Hao Wang, Yinuo Wang, Ji-Rong Wen, Yuan Lu, Zhicheng Dou",
+  arxiv: "https://arxiv.org/abs/2602.22897",
+  cats: ["arch"],
+  summary: "提出全模态AI Agent综合基准OmniGAIA，包含360个任务、9个真实领域，覆盖视频+音频和图像+音频设置。同时提出OmniAtlas基础Agent和OmniDPO训练方法，支持原生多模态感知与工具集成推理。",
+  fig1: "https://ar5iv.labs.arxiv.org/html/2602.22897/assets/x3.png",
+  fig1cap: "OmniGAIA示例：多模态证据整合与多步工具使用",
+  fig2: "https://ar5iv.labs.arxiv.org/html/2602.22897/assets/x4.png",
+  fig2cap: "OmniGAIA构建流程：事件图驱动的Omni-modal数据构造管线"
+},
+{
+  title: "DeepAgent: Scalable Tool-Set Reasoning Agent",
+  authors: "Xiaoxi Li, Wenxiang Jiao, Jiarui Jin, Guanting Dong, Jiajie Jin, Yinuo Wang, Hao Wang, Yutao Zhu, Ji-Rong Wen, Yuan Lu, Zhicheng Dou",
+  arxiv: "https://arxiv.org/abs/2510.21618",
+  cats: ["tool","arch"],
+  summary: "提出可扩展工具集推理Agent DeepAgent，实现自主思考、工具发现与行动执行的统一推理过程。引入自主记忆折叠机制和ToolPO端到端RL训练方法，在8个基准上显著超越现有基线。",
+  fig1: "https://arxiv.org/html/2510.21618/x1.png",
+  fig1cap: "DeepAgent在通用工具使用任务和下游应用上的总体性能",
+  fig2: "https://arxiv.org/html/2510.21618/x2.png",
+  fig2cap: "Agent范式对比：传统Agent vs 深度研究Agent vs DeepAgent"
+}
+];
+
+function renderPapers(filter='all'){
+  const grid=document.getElementById('paperGrid');
+  grid.innerHTML='';
+  let count=0;
+  papers.forEach((p,i)=>{
+    if(filter!=='all'&&!p.cats.includes(filter))return;
+    count++;
+    const catLabels={arch:'Agent架构',multi:'Multi-Agent',gui:'GUI Agent',tool:'工具使用',safety:'Agent安全',reason:'Agent推理',search:'搜索Agent',memory:'Agent记忆'};
+    const tags=p.cats.map(c=>`<span class="tag tag-${c}">${catLabels[c]}</span>`).join('');
+    const fig1Html=p.fig1?`<img src="${p.fig1}" alt="Figure 1" onclick="openLB(this.src)" onerror="this.outerHTML='<div class=\\'fig-placeholder\\'>图片暂不可用</div>'">`:`<div class="fig-placeholder">📄 参见论文原文</div>`;
+    const fig2Html=p.fig2?`<img src="${p.fig2}" alt="Figure 2" onclick="openLB(this.src)" onerror="this.outerHTML='<div class=\\'fig-placeholder\\'>图片暂不可用</div>'">`:`<div class="fig-placeholder">📄 参见论文原文</div>`;
+    grid.innerHTML+=`
+    <div class="card">
+      <div class="card-body">
+        <div class="card-title"><a href="${p.arxiv}" target="_blank">${p.title}</a></div>
+        <div class="card-authors">${p.authors}</div>
+        <div class="card-tags">${tags}</div>
+        <div class="card-summary">${p.summary}</div>
+        <div class="figures">
+          <div class="fig-item">${fig1Html}<div class="fig-label">Motivation: ${p.fig1cap}</div></div>
+          <div class="fig-item">${fig2Html}<div class="fig-label">Overview: ${p.fig2cap}</div></div>
+        </div>
+      </div>
+    </div>`;
+  });
+  document.getElementById('count-all').textContent=papers.length;
+}
+
+function openLB(src){
+  document.getElementById('lb-img').src=src;
+  document.getElementById('lightbox').classList.add('show');
+}
+
+function toggleTheme(){
+  const d=document.documentElement;
+  d.setAttribute('data-theme',d.getAttribute('data-theme')==='dark'?'light':'dark');
+}
+
+document.getElementById('filterBar').addEventListener('click',e=>{
+  if(!e.target.classList.contains('filter-btn'))return;
+  document.querySelectorAll('.filter-btn').forEach(b=>b.classList.remove('active'));
+  e.target.classList.add('active');
+  renderPapers(e.target.dataset.cat);
+});
+
+renderPapers();
+</script>
+</body>
+</html>
