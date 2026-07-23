@@ -128,9 +128,9 @@ const papers = [
   arxiv: "https://ojs.aaai.org/index.php/AAAI/article/view/40180",
   cats: ["multi","reason"],
   summary: "提出基于主题的有向无环图框架S-DAG，用BERT编码器理解问题语义，图神经网络（GNN）识别相关主题并生成依赖图，为每个主题匹配最擅长的专家模型进行结构化协作推理。14个中小专家模型组成的S-DAG（平均准确率59.73%）超越GPT-4o-mini（58.52%）和MoE方法（54.56%），在MMLU-Pro、GPQA、MedMCQA多主题基准上表现突出。",
-  fig1: "https://i-blog.csdnimg.cn/img_convert/835d65403a5ffc66c75924466c7126ec.png",
+  fig1: "paper_figures/SDAG_fig1.png",
   fig1cap: "现有方法 vs S-DAG主题级精准分工对比：单模型硬扛 vs 无序协作 vs 主题级分工",
-  fig2: "https://i-blog.csdnimg.cn/img_convert/1067478402ab9aead86ed8b6f97003a0.png",
+  fig2: "paper_figures/SDAG_fig2.png",
   fig2cap: "S-DAG框架：GNN主题识别 + 依赖图构建 + 专家模型匹配与协同推理"
 },
 {
@@ -139,9 +139,9 @@ const papers = [
   arxiv: "https://arxiv.org/abs/2411.00820",
   cats: ["gui"],
   summary: "基于ChatGLM构建的基础Agent系列，面向Web浏览器和Android两大GUI场景。提出中间接口设计实现规划与定位分离，结合自进化在线RL课程学习，实现真实环境中的自主GUI操作。",
-  fig1: "https://arxiv.org/html/2411.00820/extracted/5959967/figs/Android_Demo.jpg",
+  fig1: "paper_figures/AutoGLM_fig1.jpg",
   fig1cap: "AutoGLM手机端演示：美团点咖啡",
-  fig2: "https://arxiv.org/html/2411.00820/extracted/5959967/figs/Web_Demo.jpg",
+  fig2: "paper_figures/AutoGLM_fig2.jpg",
   fig2cap: "AutoGLM网页端演示：OpenTable预约"
 },
 {
@@ -230,7 +230,7 @@ const papers = [
   fig1: "paper_figures/RefRea_fig1.png",
   fig1cap: "RefRea算法框架：推理模型+参考模型+元认知模块",
   fig2: "paper_figures/RefRea_fig2.png",
-  fig2cap: "元认知引导的动作校正流程"
+  fig2cap: "动物迁移任务轨迹对比：RefRea 高效规划并完成迁移（vs 基线 ReAct 等）"
 },
 {
   title: "MAGRPO: LLM Collaboration With Multi-Agent Reinforcement Learning (AAAI 2026 Outstanding Paper)",
