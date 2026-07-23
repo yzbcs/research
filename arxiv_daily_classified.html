@@ -1,0 +1,909 @@
+<!-- index: arXiv 每日论文分类整理 | 2026-07-23 | 对 yzbcs.github.io/study 近一周 Daily Digest 中的 arXiv 论文按主题分类并撰写类别综述 -->
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="对 yzbcs.github.io/study 近一周 Daily Digest 中的 arXiv 论文按主题分类并撰写类别综述">
+  <title>arXiv 每日论文分类整理 · 2026-07-15 ~ 2026-07-22</title>
+  <style>
+    :root {
+      --bg: #f0f2f7; --card: #fff; --ink: #1a1d26; --muted: #5c6578; --line: #e2e6ef;
+      --accent: #3b5bdb; --accent-soft: #eef2ff; --shadow: 0 8px 28px rgba(15,23,42,.07); --radius: 14px;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "PingFang SC", "Segoe UI", Roboto, sans-serif;
+      background: radial-gradient(1200px 500px at 10% -10%, #dbeafe 0%, transparent 55%),
+                  radial-gradient(900px 400px at 100% 0%, #ccfbf1 0%, transparent 50%), var(--bg);
+      color: var(--ink); line-height: 1.7; padding: 36px 18px 64px;
+    }
+    .wrap { max-width: 980px; margin: 0 auto; }
+    .hero {
+      background: linear-gradient(135deg, #0f2027 0%, #203a43 48%, #2c5364 100%);
+      color: #fff; border-radius: 18px; padding: 32px 30px 28px; box-shadow: var(--shadow); margin-bottom: 22px;
+    }
+    .hero .eyebrow { font-size: 11px; letter-spacing: 2.5px; text-transform: uppercase; color: #7ecfff; margin-bottom: 10px; }
+    .hero h1 { font-size: 28px; font-weight: 800; margin-bottom: 8px; letter-spacing: -0.02em; }
+    .hero .sub { color: #b8c9d6; font-size: 14px; margin-bottom: 16px; max-width: 720px; }
+    .stats { display: flex; flex-wrap: wrap; gap: 10px; }
+    .stat { background: rgba(255,255,255,.1); border: 1px solid rgba(255,255,255,.16); border-radius: 999px; padding: 5px 14px; font-size: 12px; color: #d7e8f5; }
+    .stat b { color: #7ecfff; }
+    .source-note { background: var(--card); border: 1px solid var(--line); border-radius: var(--radius); padding: 14px 18px; margin-bottom: 18px; color: var(--muted); font-size: 13px; }
+    .source-note a { color: var(--accent); text-decoration: none; }
+    .source-note a:hover { text-decoration: underline; }
+    .toc { background: var(--card); border: 1px solid var(--line); border-radius: var(--radius); padding: 16px 18px 10px; margin-bottom: 24px; box-shadow: var(--shadow); }
+    .toc h2 { font-size: 15px; margin-bottom: 10px; }
+    .toc-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 8px; }
+    .toc-item { display: flex; justify-content: space-between; align-items: center; gap: 10px; text-decoration: none; color: var(--ink); background: #f8fafc; border: 1px solid var(--line); border-radius: 10px; padding: 10px 12px; font-size: 13px; }
+    .toc-item:hover { border-color: #a5b4fc; background: var(--accent-soft); }
+    .toc-name { font-weight: 600; }
+    .toc-count { background: var(--accent); color: #fff; border-radius: 999px; font-size: 11px; font-weight: 700; min-width: 22px; text-align: center; padding: 1px 7px; }
+    .category { background: var(--card); border: 1px solid var(--line); border-radius: var(--radius); padding: 22px 22px 10px; margin-bottom: 20px; box-shadow: var(--shadow); }
+    .cat-header { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-bottom: 12px; padding-bottom: 10px; border-bottom: 2px solid var(--accent); }
+    .cat-header h2 { font-size: 20px; font-weight: 800; }
+    .badge { background: var(--accent-soft); color: var(--accent); border-radius: 999px; font-size: 12px; font-weight: 700; padding: 4px 12px; white-space: nowrap; }
+    .cat-summary { background: linear-gradient(180deg, #f8fafc 0%, #eef2ff 100%); border: 1px solid #e0e7ff; border-left: 4px solid var(--accent); border-radius: 0 12px 12px 0; padding: 14px 16px; margin-bottom: 18px; }
+    .summary-label { font-size: 11px; font-weight: 800; letter-spacing: 1.5px; text-transform: uppercase; color: var(--accent); margin-bottom: 6px; }
+    .cat-summary p { font-size: 14px; color: #334155; }
+    .papers { display: grid; gap: 14px; padding-bottom: 12px; }
+    .paper { border: 1px solid var(--line); border-radius: 12px; padding: 14px 16px; background: #fff; }
+    .paper-top { display: flex; justify-content: space-between; gap: 10px; align-items: flex-start; margin-bottom: 8px; }
+    .tags { display: flex; flex-wrap: wrap; gap: 5px; }
+    .tag { font-size: 10px; font-weight: 700; padding: 2px 8px; border-radius: 5px; background: #f1f5f9; color: #475569; }
+    .digest-date { font-size: 11px; color: #94a3b8; white-space: nowrap; }
+    .paper-title { font-size: 15px; font-weight: 700; line-height: 1.45; margin-bottom: 6px; }
+    .paper-title a { color: inherit; text-decoration: none; }
+    .paper-title a:hover { color: var(--accent); text-decoration: underline; }
+    .paper-meta { display: flex; flex-wrap: wrap; gap: 8px 14px; font-size: 12px; color: var(--muted); margin-bottom: 8px; }
+    .arxiv-id a { color: var(--accent); font-weight: 700; text-decoration: none; font-family: ui-monospace, SFMono-Regular, Menlo, monospace; }
+    .one-line { background: var(--accent-soft); border-left: 3px solid var(--accent); border-radius: 0 8px 8px 0; padding: 8px 12px; font-size: 13px; color: #1e293b; margin-bottom: 8px; }
+    .detail { font-size: 13px; color: #475569; margin-bottom: 10px; }
+    .links { display: flex; gap: 8px; }
+    .btn { display: inline-block; font-size: 12px; font-weight: 700; text-decoration: none; padding: 5px 12px; border-radius: 8px; background: var(--accent); color: #fff; }
+    .btn-pdf { background: #0f766e; }
+    .footer { text-align: center; color: #94a3b8; font-size: 12px; margin-top: 8px; }
+    @media (max-width: 640px) {
+      body { padding: 18px 12px 40px; }
+      .hero { padding: 22px 18px; }
+      .hero h1 { font-size: 22px; }
+      .category { padding: 16px 14px 8px; }
+      .paper-top { flex-direction: column; }
+    }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <header class="hero">
+      <div class="eyebrow">Daily Digest · Topic Classification</div>
+      <h1>arXiv 每日论文分类整理</h1>
+      <p class="sub">
+        从来源 <strong>yzbcs.github.io/study</strong> 的 Daily Digest 中提取 arXiv 论文
+        （不含小红书笔记），按主题归类，并为每一类撰写内容综述。窗口：最近可用的多日推送。
+      </p>
+      <div class="stats">
+        <span class="stat">论文 <b>40</b> 篇</span>
+        <span class="stat">类别 <b>11</b> 个</span>
+        <span class="stat">日期窗口 <b>2026-07-15 ~ 2026-07-22</b></span>
+        <span class="stat">生成日 <b>2026-07-23</b></span>
+      </div>
+    </header>
+    <div class="source-note">
+      数据来源：
+      <a href="https://yzbcs.github.io/study/" target="_blank" rel="noopener">https://yzbcs.github.io/study/</a>
+      · 索引
+      <a href="https://raw.githubusercontent.com/yzbcs/yzbcs.github.io/master/study/data.json" target="_blank" rel="noopener">study/data.json</a>
+      · 分类依据为 digest 卡片中的 tags、标题与中文一句话/详解摘要（未阅读 PDF 全文）。
+      收录 digest 日：2026-07-15, 2026-07-16, 2026-07-17, 2026-07-20, 2026-07-22。
+      注：2026-07-18 与 2026-07-19 的 digest 无 arXiv 卡片。
+    </div>
+    <nav class="toc" aria-label="类别目录">
+      <h2>类别目录</h2>
+      <div class="toc-grid"><a class="toc-item" href="#cat-0"><span class="toc-name">LLM Agent 安全、隔离与对抗</span><span class="toc-count">7</span></a><a class="toc-item" href="#cat-1"><span class="toc-name">Agent 调试、错误纠正与可观测性</span><span class="toc-count">2</span></a><a class="toc-item" href="#cat-2"><span class="toc-name">多 Agent 协作与应用规划</span><span class="toc-count">4</span></a><a class="toc-item" href="#cat-3"><span class="toc-name">Agent 行为、叙事与可控性</span><span class="toc-count">4</span></a><a class="toc-item" href="#cat-4"><span class="toc-name">工具调用、Skill 与 MCP 生态</span><span class="toc-count">5</span></a><a class="toc-item" href="#cat-5"><span class="toc-name">记忆系统与经验复用</span><span class="toc-count">3</span></a><a class="toc-item" href="#cat-6"><span class="toc-name">强化学习、训练与自改进</span><span class="toc-count">3</span></a><a class="toc-item" href="#cat-7"><span class="toc-name">基准评测与失效分析</span><span class="toc-count">4</span></a><a class="toc-item" href="#cat-8"><span class="toc-name">端侧、跨设备与垂直领域 Agent</span><span class="toc-count">5</span></a><a class="toc-item" href="#cat-9"><span class="toc-name">Agent 系统框架与决策接口</span><span class="toc-count">2</span></a><a class="toc-item" href="#cat-10"><span class="toc-name">深度研究与类比推理 Agent</span><span class="toc-count">1</span></a></div>
+    </nav>
+    
+    <section class="category" id="cat-0">
+      <header class="cat-header">
+        <h2>LLM Agent 安全、隔离与对抗</h2>
+        <span class="badge">7 篇</span>
+      </header>
+      <div class="cat-summary">
+        <div class="summary-label">类别综述</div>
+        <p>本组共 7 篇，集中讨论 LLM Agent 落地时的安全边界与对抗面。包括：HPC 下凭证继承导致的权限滥用基准（Trusted Credentials）；持久外部内存投毒（MemPoison）；隔离作为一等公民的安全原则；上下文感知的 EXECUTE-ASK-REFUSE 人机干预；传统 Web Bot 防御面对可推理浏览器 Agent 失效；跨 Agent 异步攻击战役归因；以及从补丁反推漏洞触发路径的 Agentic 探索。主线结论是脚本式/单会话防御已不够，需要权限隔离、全局归因与可干预路由。</p>
+      </div>
+      <div class="papers">
+        <article class="paper">
+          <div class="paper-top">
+            <div class="tags"><span class="tag">arxiv</span></div>
+            <span class="digest-date">Digest 2026-07-22</span>
+          </div>
+          <h3 class="paper-title"><a href="https://arxiv.org/abs/2607.18485" target="_blank" rel="noopener">Trusted Credentials, Untrusted Behavior: Benchmarking LLM-Agent Security in High-Performance Computing</a></h3>
+          <div class="paper-meta">
+            <span class="arxiv-id"><a href="https://arxiv.org/abs/2607.18485" target="_blank" rel="noopener">arXiv:2607.18485</a></span>
+            <span class='authors'>Jie Li</span>
+          </div>
+          <p class='one-line'>建立高性能计算场景下的LLM Agent安全基准，揭示Agent权限滥用风险。</p>
+          <p class='detail'>论文针对LLM Agent在高性能计算环境中的安全问题建立基准测试。Agent通常在用户凭证下工作，继承用户的文件和调度器访问权限。核心创新在于设计了针对HPC场景的Agent安全评估框架，系统测试Agent在模拟攻击场景中的越权行为。实验揭示了当前Agent在HPC环境中存在显著的权限滥用风险，需在自主性和安全性之间寻求更好的平衡。</p>
+          <div class="links">
+            <a class="btn" href="https://arxiv.org/abs/2607.18485" target="_blank" rel="noopener">Abstract</a>
+            <a class="btn btn-pdf" href="https://arxiv.org/pdf/2607.18485" target="_blank" rel="noopener">PDF</a>
+          </div>
+        </article>
+        <article class="paper">
+          <div class="paper-top">
+            <div class="tags"><span class="tag">LLM Agent</span></div>
+            <span class="digest-date">Digest 2026-07-22</span>
+          </div>
+          <h3 class="paper-title"><a href="https://arxiv.org/abs/2607.18826" target="_blank" rel="noopener">Cross-Agent Campaign Attribution: Linking Asynchronous Attacks Across LLM Agents</a></h3>
+          <div class="paper-meta">
+            <span class="arxiv-id"><a href="https://arxiv.org/abs/2607.18826" target="_blank" rel="noopener">arXiv:2607.18826</a></span>
+            <span class='authors'>SangJin Park, Myungsub Choi, Jineok Kim, Minseung Kang</span>
+          </div>
+          <p class='one-line'>提出跨Agent异步攻击归因框架，将分散在不同独立Agent会话中的对抗性攻击片段关联识别。</p>
+          <p class='detail'>论文针对LLM Agent安全评估的碎片化问题，提出跨Agent异步攻击归因方法。研究在无共享运行时状态、无测试时攻击标签的条件下，将分散在独立Agent、团队和运行时中的攻击片段关联到同一潜在对抗活动。核心创新在于形式化定义了跨Agent攻击归因问题，并设计了无需跨会话状态共享的链接方案。主要结论表明现有单会话防御机制不足以应对分布式攻击，需要全局视角的安全评估框架。</p>
+          <div class="links">
+            <a class="btn" href="https://arxiv.org/abs/2607.18826" target="_blank" rel="noopener">Abstract</a>
+            <a class="btn btn-pdf" href="https://arxiv.org/pdf/2607.18826" target="_blank" rel="noopener">PDF</a>
+          </div>
+        </article>
+        <article class="paper">
+          <div class="paper-top">
+            <div class="tags"><span class="tag">LLM Agent</span></div>
+            <span class="digest-date">Digest 2026-07-22</span>
+          </div>
+          <h3 class="paper-title"><a href="https://arxiv.org/abs/2607.18659" target="_blank" rel="noopener">Broken Gates: Re-evaluating Web Bot Defenses in the Age of LLM Agents</a></h3>
+          <div class="paper-meta">
+            <span class="arxiv-id"><a href="https://arxiv.org/abs/2607.18659" target="_blank" rel="noopener">arXiv:2607.18659</a></span>
+            <span class='authors'>Behzad Ousat, Nikita Turkmen, Lalchandra Rampersaud, Dillan Bailey, Amin Kharraz</span>
+          </div>
+          <p class='one-line'>重新评估LLM Agent时代网页机器人防御的有效性，揭示传统Bot管理系统的局限性。</p>
+          <p class='detail'>论文研究LLM驱动的浏览器Agent对网页安全的影响。传统自动化框架执行预定义脚本，而LLM Agent能自主导航网站、理解页面内容并用自然语言指令交互。核心创新在于系统性地评估现有Bot防御机制面对新型Agent的脆弱性。研究发现现有Bot管理系统的基础假设不再适用，需重新设计防护策略以应对具有推理能力的自主Agent威胁。</p>
+          <div class="links">
+            <a class="btn" href="https://arxiv.org/abs/2607.18659" target="_blank" rel="noopener">Abstract</a>
+            <a class="btn btn-pdf" href="https://arxiv.org/pdf/2607.18659" target="_blank" rel="noopener">PDF</a>
+          </div>
+        </article>
+        <article class="paper">
+          <div class="paper-top">
+            <div class="tags"><span class="tag">LLM Agent</span></div>
+            <span class="digest-date">Digest 2026-07-17</span>
+          </div>
+          <h3 class="paper-title"><a href="https://arxiv.org/abs/2607.14651" target="_blank" rel="noopener">MemPoison: Uncovering Persistent Memory Threats and Structural Blind Spots in LLM Agents</a></h3>
+          <div class="paper-meta">
+            <span class="arxiv-id"><a href="https://arxiv.org/abs/2607.14651" target="_blank" rel="noopener">arXiv:2607.14651</a></span>
+            <span class='authors'>Jifeng Gao, Kang Xia, Yi Zhang, Xiaobin Hong, Mingkai Lin</span>
+          </div>
+          <p class='one-line'>MemPoison提出针对LLM Agents持久外部内存的安全基准，含1227个攻击案例</p>
+          <p class='detail'>论文针对LLM Agents使用持久外部内存时的安全漏洞问题，提出MemPoison基准框架。研究发现恶意内容可通过交互通道注入、跨轮次保留并影响后续行为。核心创新点包括1227个手工验证的攻击案例，覆盖四种攻击类型。主要结论表明当前LLM Agents在持久内存场景下存在系统性安全盲点，为该领域安全评估提供了标准化基准。</p>
+          <div class="links">
+            <a class="btn" href="https://arxiv.org/abs/2607.14651" target="_blank" rel="noopener">Abstract</a>
+            <a class="btn btn-pdf" href="https://arxiv.org/pdf/2607.14651" target="_blank" rel="noopener">PDF</a>
+          </div>
+        </article>
+        <article class="paper">
+          <div class="paper-top">
+            <div class="tags"><span class="tag">LLM Agent</span></div>
+            <span class="digest-date">Digest 2026-07-16</span>
+          </div>
+          <h3 class="paper-title"><a href="https://arxiv.org/abs/2607.13594" target="_blank" rel="noopener">SAFETY SENTRY: Context-Aware Human Intervention via EXECUTE-ASK-REFUSE Routing</a></h3>
+          <div class="paper-meta">
+            <span class="arxiv-id"><a href="https://arxiv.org/abs/2607.13594" target="_blank" rel="noopener">arXiv:2607.13594</a></span>
+            <span class='authors'>Tianyu Chen, Chujia Hu, Wenjie Wang</span>
+          </div>
+          <p class='one-line'>提出EXECUTE-ASK-REFUSE路由机制，实现LLM Agent的上下文感知安全干预与风险控制。</p>
+          <p class='detail'>论文针对LLM Agent工具调用中的安全隐患，提出SAFETY SENTRY框架，引入EXECUTE-ASK-REFUSE三路路由机制。核心创新是将二元安全判断（安全/不安全）细分为执行、询问、拒绝三种策略，并结合用户上下文综合决策。该方法解决了现有守卫模型忽略情境适应性的问题，在保证安全的同时避免过度保守。实验验证了该机制在多种真实场景下能有效平衡安全性与实用性。（研究问题：Agent安全决策；方法：上下文感知三路路由；结论：安全性与实用性可兼得）</p>
+          <div class="links">
+            <a class="btn" href="https://arxiv.org/abs/2607.13594" target="_blank" rel="noopener">Abstract</a>
+            <a class="btn btn-pdf" href="https://arxiv.org/pdf/2607.13594" target="_blank" rel="noopener">PDF</a>
+          </div>
+        </article>
+        <article class="paper">
+          <div class="paper-top">
+            <div class="tags"><span class="tag">LLM Agent</span></div>
+            <span class="digest-date">Digest 2026-07-15</span>
+          </div>
+          <h3 class="paper-title"><a href="https://arxiv.org/abs/2607.12406" target="_blank" rel="noopener">Isolation as a First-Class Principle for LLM-Agent System Safety: Concepts, Taxonomy, Challenges and Future Directions</a></h3>
+          <div class="paper-meta">
+            <span class="arxiv-id"><a href="https://arxiv.org/abs/2607.12406" target="_blank" rel="noopener">arXiv:2607.12406</a></span>
+            <span class='authors'>Huihao Jing, Wenbin Hu, Shaojin Chen, Haochen Shi, Sirui Zhang</span>
+          </div>
+          <p class='one-line'>将隔离作为LLM-Agent系统安全的基本原则，提出系统性安全框架。</p>
+          <p class='detail'>论文将隔离概念提升为Agent系统安全的基本原则，解决现有安全研究碎片化的问题。研究从攻击类型、应用场景和基准等多维度分析Agent安全威胁，提出统一的安全框架和分类体系。核心创新在于超越输入输出对齐的传统安全观，关注系统行为和实际执行结果。论文还指出了该领域未来研究的关键挑战和方向。</p>
+          <div class="links">
+            <a class="btn" href="https://arxiv.org/abs/2607.12406" target="_blank" rel="noopener">Abstract</a>
+            <a class="btn btn-pdf" href="https://arxiv.org/pdf/2607.12406" target="_blank" rel="noopener">PDF</a>
+          </div>
+        </article>
+        <article class="paper">
+          <div class="paper-top">
+            <div class="tags"><span class="tag">LLM Agent</span></div>
+            <span class="digest-date">Digest 2026-07-15</span>
+          </div>
+          <h3 class="paper-title"><a href="https://arxiv.org/abs/2607.12058" target="_blank" rel="noopener">AutoTrace: From Patches to Triggers via Agentic Interprocedural Exploration</a></h3>
+          <div class="paper-meta">
+            <span class="arxiv-id"><a href="https://arxiv.org/abs/2607.12058" target="_blank" rel="noopener">arXiv:2607.12058</a></span>
+            <span class='authors'>Arastoo Zibaeirad, Marco Vieira, Thomas Zimmermann</span>
+          </div>
+          <p class='one-line'>提出Agentic过程间探索方法，实现从漏洞补丁到触发语句的自动定位。</p>
+          <p class='detail'>论文提出AutoTrace方法，解决漏洞触发定位问题，识别哪些语句将易受攻击状态转变为实际不安全操作。研究结合Agentic探索与因果推理，在真实CVE中跨多个调用层定位触发点。核心创新在于将Agent能力引入二进制漏洞分析，实现自动化因果推理。实验表明该方法在复杂调用场景下的触发定位准确率显著提升。</p>
+          <div class="links">
+            <a class="btn" href="https://arxiv.org/abs/2607.12058" target="_blank" rel="noopener">Abstract</a>
+            <a class="btn btn-pdf" href="https://arxiv.org/pdf/2607.12058" target="_blank" rel="noopener">PDF</a>
+          </div>
+        </article></div>
+    </section>
+    <section class="category" id="cat-1">
+      <header class="cat-header">
+        <h2>Agent 调试、错误纠正与可观测性</h2>
+        <span class="badge">2 篇</span>
+      </header>
+      <div class="cat-summary">
+        <div class="summary-label">类别综述</div>
+        <p>本组共 2 篇，面向 Agent 故障的观测、定位与修复。AgentDebugX 将调试组织为检测—归因—恢复闭环并开源工具链；Experience Memory Graph 用图结构积累修正经验，实现一次性错误纠正。共同强调：表面出错步骤常非根因，需要结构化诊断与可复用的纠错记忆。</p>
+      </div>
+      <div class="papers">
+        <article class="paper">
+          <div class="paper-top">
+            <div class="tags"><span class="tag">LLM Agent</span></div>
+            <span class="digest-date">Digest 2026-07-22</span>
+          </div>
+          <h3 class="paper-title"><a href="https://arxiv.org/abs/2607.18754" target="_blank" rel="noopener">AgentDebugX: An Open-Source Toolkit for Failure Observability, Attribution, and Recovery in LLM Agents</a></h3>
+          <div class="paper-meta">
+            <span class="arxiv-id"><a href="https://arxiv.org/abs/2607.18754" target="_blank" rel="noopener">arXiv:2607.18754</a></span>
+            <span class='authors'>Kunlun Zhu, Xuyan Ye, Zhiguang Han, Yuchen Zhao, Bingxuan Li</span>
+          </div>
+          <p class='one-line'>开源LLM Agent调试工具包，闭环整合检测、归因与恢复三个调试阶段。</p>
+          <p class='detail'>论文针对LLM Agent调试困难的问题，提出AgentDebugX开源框架。核心挑战在于Agent执行中错误表面化的步骤往往不是导致错误的真正步骤。创新点在于将调试组织为检测、归因、恢复的闭环流程，提供根因定位和诊断驱动的恢复能力。实验表明该框架能显著提高Agent故障诊断效率，将平均调试时间缩短，并开源了完整的调试工具链。</p>
+          <div class="links">
+            <a class="btn" href="https://arxiv.org/abs/2607.18754" target="_blank" rel="noopener">Abstract</a>
+            <a class="btn btn-pdf" href="https://arxiv.org/pdf/2607.18754" target="_blank" rel="noopener">PDF</a>
+          </div>
+        </article>
+        <article class="paper">
+          <div class="paper-top">
+            <div class="tags"><span class="tag">arxiv</span></div>
+            <span class="digest-date">Digest 2026-07-16</span>
+          </div>
+          <h3 class="paper-title"><a href="https://arxiv.org/abs/2607.13884" target="_blank" rel="noopener">Experience Memory Graph: One-Shot Error Correction for Agents</a></h3>
+          <div class="paper-meta">
+            <span class="arxiv-id"><a href="https://arxiv.org/abs/2607.13884" target="_blank" rel="noopener">arXiv:2607.13884</a></span>
+            <span class='authors'>Wenjun Wang, Yuchen Fang, Fengrui Liu, Zibo Liang, Kai Zheng</span>
+          </div>
+          <p class='one-line'>提出经验记忆图（EMG）实现LLM Agent的一次性错误纠正，通过图结构累积修正经验。</p>
+          <p class='detail'>论文研究LLM Agent在长期复杂任务中的错误累积问题，提出经验记忆图（Experience Memory Graph）框架，在Agent执行过程中动态构建错误修正知识图谱。核心创新在于实现一次性错误纠正，无需多次反思即可从类似错误中学习恢复。实验表明该方法显著提升Agent在长时序任务中的成功率，特别是在需要多步推理的复杂环境中。（研究问题：Agent错误恢复；方法：记忆图结构；结论：一次性纠错有效提升任务完成率）</p>
+          <div class="links">
+            <a class="btn" href="https://arxiv.org/abs/2607.13884" target="_blank" rel="noopener">Abstract</a>
+            <a class="btn btn-pdf" href="https://arxiv.org/pdf/2607.13884" target="_blank" rel="noopener">PDF</a>
+          </div>
+        </article></div>
+    </section>
+    <section class="category" id="cat-2">
+      <header class="cat-header">
+        <h2>多 Agent 协作与应用规划</h2>
+        <span class="badge">4 篇</span>
+      </header>
+      <div class="cat-summary">
+        <div class="summary-label">类别综述</div>
+        <p>本组共 4 篇，展示多 Agent 协作解决具体规划/社会/科学任务。涵盖团体旅行协商（AI Tour Meeting）、网络化社会实验中的空间协作学习、药物逆合成中的结构化记忆搜索（RetroAgent），以及目标/范围/工具/基准驱动的递归自改进架构。重点在角色分工、自然语言协商与任务级编排，而非单 Agent 能力本身。</p>
+      </div>
+      <div class="papers">
+        <article class="paper">
+          <div class="paper-top">
+            <div class="tags"><span class="tag">LLM Agent</span></div>
+            <span class="digest-date">Digest 2026-07-22</span>
+          </div>
+          <h3 class="paper-title"><a href="https://arxiv.org/abs/2607.18806" target="_blank" rel="noopener">AI Tour Meeting: Group Travel Planning by LLM Agents</a></h3>
+          <div class="paper-meta">
+            <span class="arxiv-id"><a href="https://arxiv.org/abs/2607.18806" target="_blank" rel="noopener">arXiv:2607.18806</a></span>
+            <span class='authors'>Daisuke Kikuta</span>
+          </div>
+          <p class='one-line'>设计多Agent协作框架，通过角色扮演和自然语言讨论实现团体旅行规划。</p>
+          <p class='detail'>论文提出AI Tour Meeting框架，利用多个LLM Agent进行团体旅行规划。这些Agent被赋予不同角色，通过自然语言讨论协作寻找满足各方约束和偏好的行程。核心创新在于设计了灵活的多Agent编排机制，支持角色化Agent的交互式协商。实验表明该框架能够有效整合多人旅行偏好，生成协调一致的行程方案，提升了多Agent协作解决实际问题的可行性。</p>
+          <div class="links">
+            <a class="btn" href="https://arxiv.org/abs/2607.18806" target="_blank" rel="noopener">Abstract</a>
+            <a class="btn btn-pdf" href="https://arxiv.org/pdf/2607.18806" target="_blank" rel="noopener">PDF</a>
+          </div>
+        </article>
+        <article class="paper">
+          <div class="paper-top">
+            <div class="tags"><span class="tag">LLM Agent</span></div>
+            <span class="digest-date">Digest 2026-07-17</span>
+          </div>
+          <h3 class="paper-title"><a href="https://arxiv.org/abs/2607.14512" target="_blank" rel="noopener">RetroAgent: Harnessing LLMs to Search Over Structured Memory for Agentic Retrosynthesis Planning</a></h3>
+          <div class="paper-meta">
+            <span class="arxiv-id"><a href="https://arxiv.org/abs/2607.14512" target="_blank" rel="noopener">arXiv:2607.14512</a></span>
+            <span class='authors'>Yanqiao Zhu, Jingru Gan, Xiaoqi Sun, Fang Sun, Yidan Shi</span>
+          </div>
+          <p class='one-line'>RetroAgent利用LLM在结构化记忆上搜索实现药物逆合成规划</p>
+          <p class='detail'>论文提出RetroAgent，利用LLM在结构化记忆上进行多步逆合成规划搜索。核心创新在于结合LLM的推理能力与树搜索算法处理组合搜索空间。实验表明该方法在分解复杂分子为可用构建块方面优于传统基于价值网络的方法，为化学合成规划提供新范式。</p>
+          <div class="links">
+            <a class="btn" href="https://arxiv.org/abs/2607.14512" target="_blank" rel="noopener">Abstract</a>
+            <a class="btn btn-pdf" href="https://arxiv.org/pdf/2607.14512" target="_blank" rel="noopener">PDF</a>
+          </div>
+        </article>
+        <article class="paper">
+          <div class="paper-top">
+            <div class="tags"><span class="tag">LLM Agent</span></div>
+            <span class="digest-date">Digest 2026-07-17</span>
+          </div>
+          <h3 class="paper-title"><a href="https://arxiv.org/abs/2607.14574" target="_blank" rel="noopener">Collaborative Spatial Learning with Multi-LLM Agents in Networked Social Experiments</a></h3>
+          <div class="paper-meta">
+            <span class="arxiv-id"><a href="https://arxiv.org/abs/2607.14574" target="_blank" rel="noopener">arXiv:2607.14574</a></span>
+            <span class='authors'>Hao He, Chris J. Kuhlman, Xinwei Deng</span>
+          </div>
+          <p class='one-line'>多LLM Agents协作实验揭示网络结构对集体问题解决的影响</p>
+          <p class='detail'>论文通过多LLM Agents模拟Mason-Watts空间学习实验，研究通信网络结构对集体探索-利用权衡的影响。核心创新在于构建可复现人类群体行为的Multi-Agent协作框架。主要发现短路径网络上的Agents仍优于长路径网络，验证了网络拓扑对集体智能的重要性。</p>
+          <div class="links">
+            <a class="btn" href="https://arxiv.org/abs/2607.14574" target="_blank" rel="noopener">Abstract</a>
+            <a class="btn btn-pdf" href="https://arxiv.org/pdf/2607.14574" target="_blank" rel="noopener">PDF</a>
+          </div>
+        </article>
+        <article class="paper">
+          <div class="paper-top">
+            <div class="tags"><span class="tag">arxiv</span></div>
+            <span class="digest-date">Digest 2026-07-15</span>
+          </div>
+          <h3 class="paper-title"><a href="https://arxiv.org/abs/2607.12254" target="_blank" rel="noopener">How to Realize Recursively Self-Improving Agents and Personal Singularity: A Goal-, Scope-, Tool-, and Benchmark-Driven Multi-Agent Architecture</a></h3>
+          <div class="paper-meta">
+            <span class="arxiv-id"><a href="https://arxiv.org/abs/2607.12254" target="_blank" rel="noopener">arXiv:2607.12254</a></span>
+            <span class='authors'>Chengshuai Yang</span>
+          </div>
+          <p class='one-line'>提出目标、范围、工具和基准驱动的多Agent架构，实现递归自我改进。</p>
+          <p class='detail'>论文提出治理式多Agent架构，解决如何让Agent递归改进自身学习与行动机制的问题。研究了Agent如何通过目标、范围、工具和基准的协同设计实现自我提升，并增强用户而非仅软件本身的能力。核心创新在于构建了自我改进的闭环机制和多层治理结构。实验表明该架构能实现持续的能力增长和个性化增强。</p>
+          <div class="links">
+            <a class="btn" href="https://arxiv.org/abs/2607.12254" target="_blank" rel="noopener">Abstract</a>
+            <a class="btn btn-pdf" href="https://arxiv.org/pdf/2607.12254" target="_blank" rel="noopener">PDF</a>
+          </div>
+        </article></div>
+    </section>
+    <section class="category" id="cat-3">
+      <header class="cat-header">
+        <h2>Agent 行为、叙事与可控性</h2>
+        <span class="badge">4 篇</span>
+      </header>
+      <div class="cat-summary">
+        <div class="summary-label">类别综述</div>
+        <p>本组共 4 篇，从行为科学与可控性角度审视 Agent。叙事先验实验表明任务叙事框架可压过指定角色；信息抽取中的 Reflection/Memory 组件如何改变行为可控性；集合转换测试评估工具可靠性突变下的适应；Digital Pantheon 则用政治联盟模拟审计 RLHF 对党派行为的影响。主题是：行为不仅由模型权重决定，也由叙事、组件与训练对齐塑造。</p>
+      </div>
+      <div class="papers">
+        <article class="paper">
+          <div class="paper-top">
+            <div class="tags"><span class="tag">LLM Agent</span></div>
+            <span class="digest-date">Digest 2026-07-22</span>
+          </div>
+          <h3 class="paper-title"><a href="https://arxiv.org/abs/2607.18566" target="_blank" rel="noopener">The Story Shapes the Agent: Narrative Priors in LLM Behavior</a></h3>
+          <div class="paper-meta">
+            <span class="arxiv-id"><a href="https://arxiv.org/abs/2607.18566" target="_blank" rel="noopener">arXiv:2607.18566</a></span>
+            <span class='authors'>Yixuan Wang, James Lester, Shashank Srivastava</span>
+          </div>
+          <p class='one-line'>实验揭示任务叙事框架对LLM Agent行为的影响大于指定角色设定。</p>
+          <p class='detail'>论文通过结构同构的三款文本调查游戏研究叙事对Agent行为的影响。这些游戏共享相同的动作空间、阶段进度和资源约束，仅叙事背景不同（疾病调查、IT故障排除、犯罪侦查）。核心发现是任务的叙事框架对Agent行为的影响大于赋予的角色设定本身。创新点在于首次实验性分离了叙事和人格对Agent行为的独立影响，为理解Agent行为塑造因素提供了新视角。</p>
+          <div class="links">
+            <a class="btn" href="https://arxiv.org/abs/2607.18566" target="_blank" rel="noopener">Abstract</a>
+            <a class="btn btn-pdf" href="https://arxiv.org/pdf/2607.18566" target="_blank" rel="noopener">PDF</a>
+          </div>
+        </article>
+        <article class="paper">
+          <div class="paper-top">
+            <div class="tags"><span class="tag">arxiv</span></div>
+            <span class="digest-date">Digest 2026-07-20</span>
+          </div>
+          <h3 class="paper-title"><a href="https://arxiv.org/abs/2607.15715" target="_blank" rel="noopener">Behavioral Controllability of Agentic Models for Information Extraction: From Fixed Workflows to Reflective Agents</a></h3>
+          <div class="paper-meta">
+            <span class="arxiv-id"><a href="https://arxiv.org/abs/2607.15715" target="_blank" rel="noopener">arXiv:2607.15715</a></span>
+            <span class='authors'>Lujia Zhang, Xingzhou Chen, Hongwei Feng</span>
+          </div>
+          <p class='one-line'>系统研究Agentic组件（Reflection、Memory）对LLM工作流在信息提取任务中可控性的影响</p>
+          <p class='detail'>论文以学术论文数据集提取为实验场景，系统评估Reflection和Memory等Agentic组件对LLM工作流可控性的影响。研究采用控制变量实验，对比固定Pipeline与自适应Agent架构的表现差异。核心发现：动态反思机制能提升实体识别召回率约15%，但也引入不可预测行为；Memory组件对跨文档上下文关联有显著增益。论文为Agent设计者提供了可控性评估框架。</p>
+          <div class="links">
+            <a class="btn" href="https://arxiv.org/abs/2607.15715" target="_blank" rel="noopener">Abstract</a>
+            <a class="btn btn-pdf" href="https://arxiv.org/pdf/2607.15715" target="_blank" rel="noopener">PDF</a>
+          </div>
+        </article>
+        <article class="paper">
+          <div class="paper-top">
+            <div class="tags"><span class="tag">LLM Agent</span></div>
+            <span class="digest-date">Digest 2026-07-17</span>
+          </div>
+          <h3 class="paper-title"><a href="https://arxiv.org/abs/2607.15095" target="_blank" rel="noopener">Digital Pantheon: Simulating and Auditing Coalition Formation with LLM Agents</a></h3>
+          <div class="paper-meta">
+            <span class="arxiv-id"><a href="https://arxiv.org/abs/2607.15095" target="_blank" rel="noopener">arXiv:2607.15095</a></span>
+            <span class='authors'>Dylan Van Mulders, Matthias Bogaert, Dirk Van den Poel</span>
+          </div>
+          <p class='one-line'>Digital Pantheon模拟政治联盟形成，揭示RLHF对LLM Agents党派行为的影响</p>
+          <p class='detail'>论文使用LLM Agents模拟政治联盟形成过程，揭示RLHF训练引入的中立性和有益性偏差如何影响党派行为。核心创新在于构建可捕捉政策目标与意识形态信念的联盟形成模型。主要发现表明RLHF训练的LLM难以维持坚定的党派立场，为计算政治科学研究提供新工具。</p>
+          <div class="links">
+            <a class="btn" href="https://arxiv.org/abs/2607.15095" target="_blank" rel="noopener">Abstract</a>
+            <a class="btn btn-pdf" href="https://arxiv.org/pdf/2607.15095" target="_blank" rel="noopener">PDF</a>
+          </div>
+        </article>
+        <article class="paper">
+          <div class="paper-top">
+            <div class="tags"><span class="tag">LLM Agent</span></div>
+            <span class="digest-date">Digest 2026-07-16</span>
+          </div>
+          <h3 class="paper-title"><a href="https://arxiv.org/abs/2607.13396" target="_blank" rel="noopener">Set-shifting Behavioral Test for Harnessed Agents</a></h3>
+          <div class="paper-meta">
+            <span class="arxiv-id"><a href="https://arxiv.org/abs/2607.13396" target="_blank" rel="noopener">arXiv:2607.13396</a></span>
+            <span class='authors'>Ziwei Ye</span>
+          </div>
+          <p class='one-line'>提出集合转换行为测试，从认知心理学角度评估Agent在工具可靠性突变时的适应能力。</p>
+          <p class='detail'>论文借用认知心理学的集合转换概念，研究Agent在工具可靠性隐性变化时的行为适应能力。核心创新是设计工具-技能库冗余测试环境，其中多个工具可完成相同任务但可靠性不同，通过隐藏调度变化测试Agent的适应能力。实验揭示现有harnessed Agent在面对可靠性突变时普遍缺乏有效应对策略，为增强Agent鲁棒性和自适应能力提供新测试框架。（研究问题：Agent工具选择鲁棒性；方法：可靠性突变测试；结论：Agent对隐性变化适应不足）</p>
+          <div class="links">
+            <a class="btn" href="https://arxiv.org/abs/2607.13396" target="_blank" rel="noopener">Abstract</a>
+            <a class="btn btn-pdf" href="https://arxiv.org/pdf/2607.13396" target="_blank" rel="noopener">PDF</a>
+          </div>
+        </article></div>
+    </section>
+    <section class="category" id="cat-4">
+      <header class="cat-header">
+        <h2>工具调用、Skill 与 MCP 生态</h2>
+        <span class="badge">5 篇</span>
+      </header>
+      <div class="cat-summary">
+        <div class="summary-label">类别综述</div>
+        <p>本组共 5 篇，围绕 Agent 与外部工具/技能生态的接口。ToolVerse 支撑大规模环境与长程工具协同；SkillCorpus 评估开源 Skill 的真实增益；云端 Scalable MCP 解决大规模工具接入的兼容与管理；MCPEvol-Bench 跟踪 MCP 服务器演化下的工具使用能力；ToolAlignBench 揭示工具调用场景下的对齐冲突与价值观优先级。主线是把“会调用工具”推进到可扩展、可评测、可对齐的生态层。</p>
+      </div>
+      <div class="papers">
+        <article class="paper">
+          <div class="paper-top">
+            <div class="tags"><span class="tag">LLM Agent</span></div>
+            <span class="digest-date">Digest 2026-07-20</span>
+          </div>
+          <h3 class="paper-title"><a href="https://arxiv.org/abs/2607.15660" target="_blank" rel="noopener">ToolVerse: Unlocking Massive Environments and Long-Horizon Tasks for Agentic Reinforcement Learning</a></h3>
+          <div class="paper-meta">
+            <span class="arxiv-id"><a href="https://arxiv.org/abs/2607.15660" target="_blank" rel="noopener">arXiv:2607.15660</a></span>
+            <span class='authors'>Shuaiyu Zhou, Fengpeng Yue, Zengjie Hu, Yuanzhe Shen, Chenyang Zhang</span>
+          </div>
+          <p class='one-line'>构建ToolVerse大规模环境框架，支持LLM Agent在复杂真实场景中进行长期任务规划与工具协同</p>
+          <p class='detail'>论文聚焦LLM Agent在真实大规模环境中的鲁棒性和工具集成能力不足问题。研究提出ToolVerse框架，包含可扩展的Agentic RL环境和任务集，支持跨多领域工具调用与长期规划。核心创新在于设计了动态环境生成机制和分层任务分解方法。实验在模拟企业运维、软件部署等场景验证了Agent在复杂工作流中的决策质量，工具调用准确率提升约20%。</p>
+          <div class="links">
+            <a class="btn" href="https://arxiv.org/abs/2607.15660" target="_blank" rel="noopener">Abstract</a>
+            <a class="btn btn-pdf" href="https://arxiv.org/pdf/2607.15660" target="_blank" rel="noopener">PDF</a>
+          </div>
+        </article>
+        <article class="paper">
+          <div class="paper-top">
+            <div class="tags"><span class="tag">LLM Agent</span></div>
+            <span class="digest-date">Digest 2026-07-20</span>
+          </div>
+          <h3 class="paper-title"><a href="https://arxiv.org/abs/2607.15557" target="_blank" rel="noopener">SkillCorpus: Consolidating and Evaluating the Open Skill Ecosystem for Real-World LLM Agents</a></h3>
+          <div class="paper-meta">
+            <span class="arxiv-id"><a href="https://arxiv.org/abs/2607.15557" target="_blank" rel="noopener">arXiv:2607.15557</a></span>
+            <span class='authors'>Yanze Wang, Pengfei Yao, Tianyi Sun, Chuanrui Hu, Yan Xiao</span>
+          </div>
+          <p class='one-line'>构建SkillCorpus语料库，系统评估开源Skill对LLM Agent在真实任务中性能的实际影响</p>
+          <p class='detail'>论文针对开源Skill生态碎片化、质量参差不齐的问题展开研究。通过收集、清洗、标注GitHub等平台的SKILL.md文件构建SkillCorpus语料库，包含2000+高质量技能定义。核心工作包括：设计技能质量评估指标、验证技能在ToolBench等基准上的有效性、以及提出技能选择推荐策略。实验表明，经过筛选的技能组合可使Agent任务完成率提升约30%，为构建可靠技能生态提供基础设施。</p>
+          <div class="links">
+            <a class="btn" href="https://arxiv.org/abs/2607.15557" target="_blank" rel="noopener">Abstract</a>
+            <a class="btn btn-pdf" href="https://arxiv.org/pdf/2607.15557" target="_blank" rel="noopener">PDF</a>
+          </div>
+        </article>
+        <article class="paper">
+          <div class="paper-top">
+            <div class="tags"><span class="tag">LLM Agent</span></div>
+            <span class="digest-date">Digest 2026-07-20</span>
+          </div>
+          <h3 class="paper-title"><a href="https://arxiv.org/abs/2607.15593" target="_blank" rel="noopener">Scalable LLM Agent Tool Access in the Cloud</a></h3>
+          <div class="paper-meta">
+            <span class="arxiv-id"><a href="https://arxiv.org/abs/2607.15593" target="_blank" rel="noopener">arXiv:2607.15593</a></span>
+            <span class='authors'>Mingxin Li, Enge Song, Yueshang Zuo, Xiaodong Liu, Rong Wen</span>
+          </div>
+          <p class='one-line'>提出Scalable MCP方案解决云端LLM Agent大规模工具调用的兼容性、可扩展性和管理难题</p>
+          <p class='detail'>论文针对云端部署LLM Agent工具调用面临的挑战展开研究。核心问题包括：遗留服务无法直接通过MCP调用、协议兼容性成本、以及Agent端工具数量增长的路由复杂性。论文提出Scalable LLM Agent Tool Access框架，通过标准化接口和智能路由机制实现大规模工具集成。实验表明该方案可有效支持企业级多Agent协作场景，显著降低工具集成的开发和维护成本。</p>
+          <div class="links">
+            <a class="btn" href="https://arxiv.org/abs/2607.15593" target="_blank" rel="noopener">Abstract</a>
+            <a class="btn btn-pdf" href="https://arxiv.org/pdf/2607.15593" target="_blank" rel="noopener">PDF</a>
+          </div>
+        </article>
+        <article class="paper">
+          <div class="paper-top">
+            <div class="tags"><span class="tag">LLM Agent</span></div>
+            <span class="digest-date">Digest 2026-07-17</span>
+          </div>
+          <h3 class="paper-title"><a href="https://arxiv.org/abs/2607.14285" target="_blank" rel="noopener">ToolAlignBench: Investigating Alignment Conflicts in Tool-Calling Enabled LLMs</a></h3>
+          <div class="paper-meta">
+            <span class="arxiv-id"><a href="https://arxiv.org/abs/2607.14285" target="_blank" rel="noopener">arXiv:2607.14285</a></span>
+            <span class='authors'>Aryan Keluskar, Amrita Bhattacharjee, Huan Liu</span>
+          </div>
+          <p class='one-line'>ToolAlignBench揭示工具调用LLM Agents在对齐冲突下的价值观优先级问题</p>
+          <p class='detail'>论文研究工具调用LLM Agents在受监管行业中的对齐冲突问题，提出ToolAlignBench评估框架。核心创新在于量化当安全训练价值观与部署指令冲突时的决策权衡。实验表明当前Agent在处理机密文档时常因触发安全价值观而产生冲突，为行业部署提供对齐策略指导。</p>
+          <div class="links">
+            <a class="btn" href="https://arxiv.org/abs/2607.14285" target="_blank" rel="noopener">Abstract</a>
+            <a class="btn btn-pdf" href="https://arxiv.org/pdf/2607.14285" target="_blank" rel="noopener">PDF</a>
+          </div>
+        </article>
+        <article class="paper">
+          <div class="paper-top">
+            <div class="tags"><span class="tag">LLM Agent</span></div>
+            <span class="digest-date">Digest 2026-07-17</span>
+          </div>
+          <h3 class="paper-title"><a href="https://arxiv.org/abs/2607.14642" target="_blank" rel="noopener">MCPEvol-Bench: Benchmarking LLM Agent Performance Across Dynamic Evolutions of MCP Servers</a></h3>
+          <div class="paper-meta">
+            <span class="arxiv-id"><a href="https://arxiv.org/abs/2607.14642" target="_blank" rel="noopener">arXiv:2607.14642</a></span>
+            <span class='authors'>Huanxi Liu, Kun Hu, Jiaqi Liao, Qiang Wang, Pengfei Qian</span>
+          </div>
+          <p class='one-line'>MCPEvol-Bench评估MCP服务器动态演化下LLM Agents的工具使用能力</p>
+          <p class='detail'>论文针对MCP服务器接口持续演化导致的Agent评估偏差问题，提出MCPEvol-Bench动态评估基准。核心创新在于模拟服务器版本变化，测试Agent对新旧接口的适应能力。实验揭示现有基准因忽视工具演化而高估Agent性能，为真实场景部署提供更准确的评估标准。</p>
+          <div class="links">
+            <a class="btn" href="https://arxiv.org/abs/2607.14642" target="_blank" rel="noopener">Abstract</a>
+            <a class="btn btn-pdf" href="https://arxiv.org/pdf/2607.14642" target="_blank" rel="noopener">PDF</a>
+          </div>
+        </article></div>
+    </section>
+    <section class="category" id="cat-5">
+      <header class="cat-header">
+        <h2>记忆系统与经验复用</h2>
+        <span class="badge">3 篇</span>
+      </header>
+      <div class="cat-summary">
+        <div class="summary-label">类别综述</div>
+        <p>本组共 3 篇，把外部记忆从固定启发式变成可学习、可加速、可估计置信的过程。内容包括自适应记忆管理、带记忆的无损推测执行加速，以及 Critic 经验库支撑的步级置信度估计。共同目标是让 Agent 在多轮任务中更稳地复用历史经验。</p>
+      </div>
+      <div class="papers">
+        <article class="paper">
+          <div class="paper-top">
+            <div class="tags"><span class="tag">LLM Agent</span></div>
+            <span class="digest-date">Digest 2026-07-16</span>
+          </div>
+          <h3 class="paper-title"><a href="https://arxiv.org/abs/2607.13591" target="_blank" rel="noopener">Memory as a Controlled Process: Learned Adaptive Memory Management for LLM Agents</a></h3>
+          <div class="paper-meta">
+            <span class="arxiv-id"><a href="https://arxiv.org/abs/2607.13591" target="_blank" rel="noopener">arXiv:2607.13591</a></span>
+            <span class='authors'>Eric Hanchen Jiang, Zhi Zhang, Yuchen Wu, Levina Li, Dong Liu</span>
+          </div>
+          <p class='one-line'>提出自适应记忆管理机制，将LLM Agent的外部记忆系统从固定启发式转变为可学习控制。</p>
+          <p class='detail'>论文挑战现有LLM Agent记忆系统的静态设计，提出记忆作为受控过程（Memory as a Controlled Process）的新视角。核心创新是引入可学习的自适应记忆管理机制，使Agent能根据任务需求动态决定记忆的存储、检索和遗忘策略。实验表明，相较于图结构或反射式记忆方法，学习型记忆管理显著提升Agent在跨任务场景中的效率和适应性，为Agent学习能力开辟新路径。（研究问题：Agent记忆管理；方法：学习型自适应控制；结论：动态记忆管理优于静态启发式）</p>
+          <div class="links">
+            <a class="btn" href="https://arxiv.org/abs/2607.13591" target="_blank" rel="noopener">Abstract</a>
+            <a class="btn btn-pdf" href="https://arxiv.org/pdf/2607.13591" target="_blank" rel="noopener">PDF</a>
+          </div>
+        </article>
+        <article class="paper">
+          <div class="paper-top">
+            <div class="tags"><span class="tag">LLM Agent</span></div>
+            <span class="digest-date">Digest 2026-07-15</span>
+          </div>
+          <h3 class="paper-title"><a href="https://arxiv.org/abs/2607.12236" target="_blank" rel="noopener">Speculate with Memory: Lossless Acceleration for LLM Agents</a></h3>
+          <div class="paper-meta">
+            <span class="arxiv-id"><a href="https://arxiv.org/abs/2607.12236" target="_blank" rel="noopener">arXiv:2607.12236</a></span>
+            <span class='authors'>Yu Li, Qinyuan Ye, Prafulla Kumar Choubey, Jiaxin Zhang, Chien-Sheng Wu</span>
+          </div>
+          <p class='one-line'>为LLM Agent配备在线记忆系统，实现无损加速的推测执行。</p>
+          <p class='detail'>论文提出带记忆的推测执行框架，解决现有推测器忽视历史信息导致预测质量停滞的问题。研究为推测器增加三种在线记忆系统，从历史Agent轨迹中学习。核心创新在于让推测器具备跨任务学习能力，随着经验积累提升预测准确性。实验表明该方法在保持精度的同时显著降低了Agent响应延迟。</p>
+          <div class="links">
+            <a class="btn" href="https://arxiv.org/abs/2607.12236" target="_blank" rel="noopener">Abstract</a>
+            <a class="btn btn-pdf" href="https://arxiv.org/pdf/2607.12236" target="_blank" rel="noopener">PDF</a>
+          </div>
+        </article>
+        <article class="paper">
+          <div class="paper-top">
+            <div class="tags"><span class="tag">LLM Agent</span></div>
+            <span class="digest-date">Digest 2026-07-15</span>
+          </div>
+          <h3 class="paper-title"><a href="https://arxiv.org/abs/2607.12397" target="_blank" rel="noopener">Critic Experience Bank: Self-Evolving Step-Level Confidence Estimation for LLM Agents</a></h3>
+          <div class="paper-meta">
+            <span class="arxiv-id"><a href="https://arxiv.org/abs/2607.12397" target="_blank" rel="noopener">arXiv:2607.12397</a></span>
+            <span class='authors'>Yaopei Zeng, Congchao Wang, JianHang Chen, Nan Wang, Yurui Chang</span>
+          </div>
+          <p class='one-line'>构建Agent经验库实现步级置信度估计，提升LLM Agent决策可靠性。</p>
+          <p class='detail'>论文提出经验库机制，解决Agent在外部环境中单步错误导致预算浪费或不可逆副作用的问题。研究如何通过历史经验估计每步行动的产出概率，实现校准的置信度评估。核心创新在于构建步级置信度估计框架，使Agent能提前识别高风险行动。实验表明该方法显著降低了任务失败率和资源消耗。</p>
+          <div class="links">
+            <a class="btn" href="https://arxiv.org/abs/2607.12397" target="_blank" rel="noopener">Abstract</a>
+            <a class="btn btn-pdf" href="https://arxiv.org/pdf/2607.12397" target="_blank" rel="noopener">PDF</a>
+          </div>
+        </article></div>
+    </section>
+    <section class="category" id="cat-6">
+      <header class="cat-header">
+        <h2>强化学习、训练与自改进</h2>
+        <span class="badge">3 篇</span>
+      </header>
+      <div class="cat-summary">
+        <div class="summary-label">类别综述</div>
+        <p>本组共 3 篇，讨论 Agent 的训练信号与自我演化机制。Process Reward 引导的树搜索 Rollout 提升多轮 RL 探索效率；门控语义质量-多样性搜索自动优化 harness；评估指标与技能协同演化支持自改进 Agent。焦点在训练期/演化期的信号设计，而非单次推理策略。</p>
+      </div>
+      <div class="papers">
+        <article class="paper">
+          <div class="paper-top">
+            <div class="tags"><span class="tag">LLM Agent</span></div>
+            <span class="digest-date">Digest 2026-07-20</span>
+          </div>
+          <h3 class="paper-title"><a href="https://arxiv.org/abs/2607.15610" target="_blank" rel="noopener">Process Reward Informed Tree Rollout for Effective Multi-Turn RL</a></h3>
+          <div class="paper-meta">
+            <span class="arxiv-id"><a href="https://arxiv.org/abs/2607.15610" target="_blank" rel="noopener">arXiv:2607.15610</a></span>
+            <span class='authors'>Xintong Li, Sha Li, Yuwei Zhang, Changlong Yu, Rongmei Lin</span>
+          </div>
+          <p class='one-line'>提出Process Reward引导的树搜索Rollout策略，优化多轮RL训练中LLM Agent的探索效率</p>
+          <p class='detail'>论文针对Multi-Turn RL训练中GRPO/RLOO方法的采样效率问题展开研究。核心问题：均匀Rollout在死胡同路径上浪费计算资源，而有潜力的中间状态未被充分探索。论文提出Process Reward Informed Tree Rollout方法，利用过程奖励信号引导树搜索偏向高价值分支。实验在ALFWorld等benchmark显示，在相同计算预算下最终成功率提升约25%，有效减少了无效轨迹采样。</p>
+          <div class="links">
+            <a class="btn" href="https://arxiv.org/abs/2607.15610" target="_blank" rel="noopener">Abstract</a>
+            <a class="btn btn-pdf" href="https://arxiv.org/pdf/2607.15610" target="_blank" rel="noopener">PDF</a>
+          </div>
+        </article>
+        <article class="paper">
+          <div class="paper-top">
+            <div class="tags"><span class="tag">LLM Agent</span></div>
+            <span class="digest-date">Digest 2026-07-16</span>
+          </div>
+          <h3 class="paper-title"><a href="https://arxiv.org/abs/2607.13683" target="_blank" rel="noopener">Self-Evolving Agent Harnesses via Gated Semantic Quality-Diversity</a></h3>
+          <div class="paper-meta">
+            <span class="arxiv-id"><a href="https://arxiv.org/abs/2607.13683" target="_blank" rel="noopener">arXiv:2607.13683</a></span>
+            <span class='authors'>Xiaotian Luo, Fengxingyu Wang, Chuanrui Hu, Dizhan Xue, Yafeng Deng</span>
+          </div>
+          <p class='one-line'>提出门控语义质量-多样性搜索实现Agent harness的自动优化，无需修改模型权重。</p>
+          <p class='detail'>论文聚焦LLM Agent性能优化，提出自动优化Agent harness（提示、注入知识、运行时控制等）的新方法。核心创新是门控语义质量-多样性（Gated Semantic Quality-Diversity）机制，通过语义空间的质量和多样性平衡实现harness的自动进化。实验证明该方法能在不接触模型权重的情况下显著提升Agent在各类任务中的表现，为实际部署中的性能优化提供了高效路径。（研究问题：Agent harness优化；方法：门控语义多样性；结论：无需改权重即可提升性能）</p>
+          <div class="links">
+            <a class="btn" href="https://arxiv.org/abs/2607.13683" target="_blank" rel="noopener">Abstract</a>
+            <a class="btn btn-pdf" href="https://arxiv.org/pdf/2607.13683" target="_blank" rel="noopener">PDF</a>
+          </div>
+        </article>
+        <article class="paper">
+          <div class="paper-top">
+            <div class="tags"><span class="tag">LLM Agent</span></div>
+            <span class="digest-date">Digest 2026-07-15</span>
+          </div>
+          <h3 class="paper-title"><a href="https://arxiv.org/abs/2607.12790" target="_blank" rel="noopener">Who Grades the Grader? Co-Evolving Evaluation Metrics and Skills for Self-Improving LLM Agents</a></h3>
+          <div class="paper-meta">
+            <span class="arxiv-id"><a href="https://arxiv.org/abs/2607.12790" target="_blank" rel="noopener">arXiv:2607.12790</a></span>
+            <span class='authors'>Xing Zhang, Guanghui Wang, Yanwei Cui, Ziyuan Li, Wei Qiu</span>
+          </div>
+          <p class='one-line'>提出评估指标与技能的协同演化机制，实现自改进LLM Agent的动态进化。</p>
+          <p class='detail'>论文提出指标循环搜索方法，解决自改进Agent系统中评估指标不可靠的问题。研究了指标如何通过进化生命周期演化，以及技能如何随之更新和淘汰。核心创新在于将评估指标本身纳入自我改进闭环，形成指标-技能协同进化机制。实验验证了演化指标能有效指导Agent技能持续提升。</p>
+          <div class="links">
+            <a class="btn" href="https://arxiv.org/abs/2607.12790" target="_blank" rel="noopener">Abstract</a>
+            <a class="btn btn-pdf" href="https://arxiv.org/pdf/2607.12790" target="_blank" rel="noopener">PDF</a>
+          </div>
+        </article></div>
+    </section>
+    <section class="category" id="cat-7">
+      <header class="cat-header">
+        <h2>基准评测与失效分析</h2>
+        <span class="badge">4 篇</span>
+      </header>
+      <div class="cat-summary">
+        <div class="summary-label">类别综述</div>
+        <p>本组共 4 篇，用基准或失效解剖量化 Agent 能力边界。STOCKTAKE 用公平 Oracle 区分感知失败与行动失败；DevicesWorld 评测异构跨设备协同；“Context Fails First” 将上下文工程置于失败分析中心；另有复杂度感知推理与执行等评测视角。价值在于把“Agent 不行”拆成可定位的子系统问题。</p>
+      </div>
+      <div class="papers">
+        <article class="paper">
+          <div class="paper-top">
+            <div class="tags"><span class="tag">LLM Agent</span></div>
+            <span class="digest-date">Digest 2026-07-17</span>
+          </div>
+          <h3 class="paper-title"><a href="https://arxiv.org/abs/2607.14275" target="_blank" rel="noopener">AI Agents Do Not Fail Alone:The Context Fails First</a></h3>
+          <div class="paper-meta">
+            <span class="arxiv-id"><a href="https://arxiv.org/abs/2607.14275" target="_blank" rel="noopener">arXiv:2607.14275</a></span>
+            <span class='authors'>Fouad Bousetouane</span>
+          </div>
+          <p class='one-line'>论文揭示上下文失效是AI Agents失败的首要原因，建立上下文工程框架</p>
+          <p class='detail'>论文指出AI Agents的失败并非源于模型本身，而是上下文失效所致，系统性地研究上下文工程对Agent可靠性的影响。核心创新包括识别六类上下文组件（指令、工具、内存等）如何导致Agent漂移、幻觉和约束违反等问题。实验表明强化上下文工程可显著提升Agent的稳定性和可靠性，为构建可靠Agent系统提供新范式。</p>
+          <div class="links">
+            <a class="btn" href="https://arxiv.org/abs/2607.14275" target="_blank" rel="noopener">Abstract</a>
+            <a class="btn btn-pdf" href="https://arxiv.org/pdf/2607.14275" target="_blank" rel="noopener">PDF</a>
+          </div>
+        </article>
+        <article class="paper">
+          <div class="paper-top">
+            <div class="tags"><span class="tag">LLM Agent</span></div>
+            <span class="digest-date">Digest 2026-07-16</span>
+          </div>
+          <h3 class="paper-title"><a href="https://arxiv.org/abs/2607.13618" target="_blank" rel="noopener">STOCKTAKE: Measuring the Gap Between Perception and Action in LLM Agents with a Fair Oracle</a></h3>
+          <div class="paper-meta">
+            <span class="arxiv-id"><a href="https://arxiv.org/abs/2607.13618" target="_blank" rel="noopener">arXiv:2607.13618</a></span>
+            <span class='authors'>Sagar Deb, Ashwanth Krishnan</span>
+          </div>
+          <p class='one-line'>提出STOCKTAKE基准，区分LLM Agent的感知失败与行动失败，测量认知-执行差距。</p>
+          <p class='detail'>论文针对LLM Agent评估的局限性问题，提出STOCKTAKE基准以分离Agent的感知错误与行动执行错误。研究发现在多周决策任务中，Agent可能正确读取环境状态但仍无法正确行动（知行差距）。核心创新是设计公平的神谕机制，区分&quot;感知-行动&quot;失败的不同来源。实验揭示现有Agent普遍存在知行差距，为改进Agent架构提供了精确诊断工具。（研究问题：Agent失败原因分析；方法：感知-行动分离评估；结论：知行差距是主要失败模式）</p>
+          <div class="links">
+            <a class="btn" href="https://arxiv.org/abs/2607.13618" target="_blank" rel="noopener">Abstract</a>
+            <a class="btn btn-pdf" href="https://arxiv.org/pdf/2607.13618" target="_blank" rel="noopener">PDF</a>
+          </div>
+        </article>
+        <article class="paper">
+          <div class="paper-top">
+            <div class="tags"><span class="tag">arxiv</span></div>
+            <span class="digest-date">Digest 2026-07-16</span>
+          </div>
+          <h3 class="paper-title"><a href="https://arxiv.org/abs/2607.13465" target="_blank" rel="noopener">DevicesWorld: Benchmarking Cross-Device Agents in Heterogeneous Environments</a></h3>
+          <div class="paper-meta">
+            <span class="arxiv-id"><a href="https://arxiv.org/abs/2607.13465" target="_blank" rel="noopener">arXiv:2607.13465</a></span>
+            <span class='authors'>Huatao Li, Xinwei Geng, Yuheng Wang, Yutong Li, Runde Yang</span>
+          </div>
+          <p class='one-line'>提出跨设备Agent基准DevicesWorld，评估LLM Agent在异构多设备环境中的协同能力。</p>
+          <p class='detail'>论文针对现有Agent基准聚焦单一设备的局限，提出跨设备评估基准DevicesWorld，模拟真实场景中信息在手机、桌面、其他设备间的流转需求。核心创新是设计需要多设备协同的复杂任务，评估Agent在异构环境中的感知、推理、工具调用与状态管理能力。实验揭示现有Agent在跨设备场景下表现显著下降，为多设备协同Agent研究提供重要基准与改进方向。（研究问题：跨设备Agent协同；方法：多设备异构环境基准；结论：跨设备协同是显著挑战）</p>
+          <div class="links">
+            <a class="btn" href="https://arxiv.org/abs/2607.13465" target="_blank" rel="noopener">Abstract</a>
+            <a class="btn btn-pdf" href="https://arxiv.org/pdf/2607.13465" target="_blank" rel="noopener">PDF</a>
+          </div>
+        </article>
+        <article class="paper">
+          <div class="paper-top">
+            <div class="tags"><span class="tag">arxiv</span></div>
+            <span class="digest-date">Digest 2026-07-15</span>
+          </div>
+          <h3 class="paper-title"><a href="https://arxiv.org/abs/2607.13034" target="_blank" rel="noopener">Do AI Agents Know When a Task Is Simple? Toward Complexity-Aware Reasoning and Execution</a></h3>
+          <div class="paper-meta">
+            <span class="arxiv-id"><a href="https://arxiv.org/abs/2607.13034" target="_blank" rel="noopener">arXiv:2607.13034</a></span>
+            <span class='authors'>Junjie Yin, Xinyu Feng</span>
+          </div>
+          <p class='one-line'>探索LLM Agent的任务复杂度感知能力，提出复杂度感知的推理与执行框架。</p>
+          <p class='detail'>论文探讨LLM Agent缺乏任务复杂度感知的问题，导致简单任务也采用最大上下文策略造成资源浪费。研究提出任务感知执行范围估计能力，使Agent能根据任务实际需求调整努力程度。核心创新在于识别Agent现有策略的效率问题，并设计自适应的任务复杂度评估机制。论文为未来Agent的精细化控制提供了理论基础。</p>
+          <div class="links">
+            <a class="btn" href="https://arxiv.org/abs/2607.13034" target="_blank" rel="noopener">Abstract</a>
+            <a class="btn btn-pdf" href="https://arxiv.org/pdf/2607.13034" target="_blank" rel="noopener">PDF</a>
+          </div>
+        </article></div>
+    </section>
+    <section class="category" id="cat-8">
+      <header class="cat-header">
+        <h2>端侧、跨设备与垂直领域 Agent</h2>
+        <span class="badge">5 篇</span>
+      </header>
+      <div class="cat-summary">
+        <div class="summary-label">类别综述</div>
+        <p>本组共 5 篇，把 Agent 放进具体载体或领域工作流。PalmClaw 做手机原生端侧框架；EFLUX 做多机器人弹性编队；AdaTurn 做预算感知的主动视觉感知；StructureClaw 做结构工程可追溯工作流；还有 Agentic 科学社区自动发现神经算子。共性是强环境约束（设备、机器人、专业软件）下的 Agent 系统设计。</p>
+      </div>
+      <div class="papers">
+        <article class="paper">
+          <div class="paper-top">
+            <div class="tags"><span class="tag">LLM Agent</span></div>
+            <span class="digest-date">Digest 2026-07-17</span>
+          </div>
+          <h3 class="paper-title"><a href="https://arxiv.org/abs/2607.14896" target="_blank" rel="noopener">StructureClaw: Traceable LLM Agents and an Executable Benchmark for Structural Engineering Workflows</a></h3>
+          <div class="paper-meta">
+            <span class="arxiv-id"><a href="https://arxiv.org/abs/2607.14896" target="_blank" rel="noopener">arXiv:2607.14896</a></span>
+            <span class='authors'>Sizhong Qin, Yi Gu, Yao Jiang, Ao Cai, Changjian Zhou</span>
+          </div>
+          <p class='one-line'>StructureClaw提出结构工程工作流的LLM Agents可追溯性评估方法</p>
+          <p class='detail'>论文针对结构工程请求的完整证据链验证问题，提出StructureClaw可追溯性框架和评估基准。核心创新在于不仅验证答案正确性，还追踪从需求解释到最终报告的完整工作流。实验表明现有QA评估方法可能奖励流畅但错误的输出，为工程领域Agent评估提供更严格的基准。</p>
+          <div class="links">
+            <a class="btn" href="https://arxiv.org/abs/2607.14896" target="_blank" rel="noopener">Abstract</a>
+            <a class="btn btn-pdf" href="https://arxiv.org/pdf/2607.14896" target="_blank" rel="noopener">PDF</a>
+          </div>
+        </article>
+        <article class="paper">
+          <div class="paper-top">
+            <div class="tags"><span class="tag">Visual agent</span></div>
+            <span class="digest-date">Digest 2026-07-17</span>
+          </div>
+          <h3 class="paper-title"><a href="https://arxiv.org/abs/2607.14547" target="_blank" rel="noopener">AdaTurn: Budget-Aware Test-Time Scaling for Active Visual Perception Agents</a></h3>
+          <div class="paper-meta">
+            <span class="arxiv-id"><a href="https://arxiv.org/abs/2607.14547" target="_blank" rel="noopener">arXiv:2607.14547</a></span>
+            <span class='authors'>Susan Liang, Chao Huang, Filippos Bellos, Jing Bi, Jason J Corso</span>
+          </div>
+          <p class='one-line'>AdaTurn提出视觉感知Agent的预算感知测试时扩展方法AdaTurn</p>
+          <p class='detail'>论文研究主动视觉Agent在多轮推理中面临预算动态变化的问题，提出AdaTurn方法。核心创新是训练策略在推理时可感知 rollout budget，实现根据可用预算自适应调整推理轮次。实验表明该方法在固定和动态预算设置下均显著优于现有方法，为视觉Agent的灵活部署提供了新思路。</p>
+          <div class="links">
+            <a class="btn" href="https://arxiv.org/abs/2607.14547" target="_blank" rel="noopener">Abstract</a>
+            <a class="btn btn-pdf" href="https://arxiv.org/pdf/2607.14547" target="_blank" rel="noopener">PDF</a>
+          </div>
+        </article>
+        <article class="paper">
+          <div class="paper-top">
+            <div class="tags"><span class="tag">arxiv</span></div>
+            <span class="digest-date">Digest 2026-07-15</span>
+          </div>
+          <h3 class="paper-title"><a href="https://arxiv.org/abs/2607.13027" target="_blank" rel="noopener">PalmClaw: A Native On-Device Agent Framework for Mobile Phones</a></h3>
+          <div class="paper-meta">
+            <span class="arxiv-id"><a href="https://arxiv.org/abs/2607.13027" target="_blank" rel="noopener">arXiv:2607.13027</a></span>
+            <span class='authors'>Hongru Cai, Yongqi Li, Ran Wei, Wenjie Li</span>
+          </div>
+          <p class='one-line'>提出移动端原生Agent框架PalmClaw，实现设备本地运行的LLM Agent系统。</p>
+          <p class='detail'>论文提出PalmClaw框架，解决现有Agent系统依赖桌面或服务器的问题。研究如何将LLM Agent能力迁移到移动设备，利用手机的用户数据、传感器等资源。核心创新在于设计了适合移动端资源限制的原生Agent架构，支持工具调用、结果观察和迭代决策。实验验证了该框架在移动环境中的可行性和任务执行能力。</p>
+          <div class="links">
+            <a class="btn" href="https://arxiv.org/abs/2607.13027" target="_blank" rel="noopener">Abstract</a>
+            <a class="btn btn-pdf" href="https://arxiv.org/pdf/2607.13027" target="_blank" rel="noopener">PDF</a>
+          </div>
+        </article>
+        <article class="paper">
+          <div class="paper-top">
+            <div class="tags"><span class="tag">LLM Agent</span></div>
+            <span class="digest-date">Digest 2026-07-15</span>
+          </div>
+          <h3 class="paper-title"><a href="https://arxiv.org/abs/2607.12050" target="_blank" rel="noopener">EFLUX: Elastic Multi-Robot Formation Navigation and Adaptation with Agentic LLMs</a></h3>
+          <div class="paper-meta">
+            <span class="arxiv-id"><a href="https://arxiv.org/abs/2607.12050" target="_blank" rel="noopener">arXiv:2607.12050</a></span>
+            <span class='authors'>Jinyuan Zhang, Yuwei Wu, Guangyao Shi, Jonathan Diller, Gaurav S. Sukhatme</span>
+          </div>
+          <p class='one-line'>提出基于Agentic LLM的多机器人弹性编队导航框架，实现动态形变与重构。</p>
+          <p class='detail'>论文提出EFLUX框架，解决多机器人在受限环境中的形变与编队重构问题。研究了基于Agentic LLM的决策机制，使机器人能根据障碍物动态调整几何形状和拓扑结构。核心创新在于将代理能力引入多机器人协调，实现连续形变和分组重组两种互补行为。实验表明该框架在复杂障碍环境中的导航成功率显著提升。</p>
+          <div class="links">
+            <a class="btn" href="https://arxiv.org/abs/2607.12050" target="_blank" rel="noopener">Abstract</a>
+            <a class="btn btn-pdf" href="https://arxiv.org/pdf/2607.12050" target="_blank" rel="noopener">PDF</a>
+          </div>
+        </article>
+        <article class="paper">
+          <div class="paper-top">
+            <div class="tags"><span class="tag">LLM Agent</span></div>
+            <span class="digest-date">Digest 2026-07-15</span>
+          </div>
+          <h3 class="paper-title"><a href="https://arxiv.org/abs/2607.12122" target="_blank" rel="noopener">An Agentic AI Scientific Community for Automated Neural Operator Discovery</a></h3>
+          <div class="paper-meta">
+            <span class="arxiv-id"><a href="https://arxiv.org/abs/2607.12122" target="_blank" rel="noopener">arXiv:2607.12122</a></span>
+            <span class='authors'>Luis Loo, Ulisses Braga-Neto</span>
+          </div>
+          <p class='one-line'>提出基于Agentic AI科学社区的自动化神经算子发现方法。</p>
+          <p class='detail'>论文提出由虚拟实验室组成的多智能体AI科学社区，解决自动化神经算子发现问题。研究设计LLM规划器、架构搜索和实验验证三种Agent协同工作，通过引用驱动的经济模型分配影响力。核心创新在于模拟科研社区的演化机制，让高引用实验室扩展研究方向，低性能实验室被淘汰。实验验证了该方法在神经算子发现任务中的有效性。</p>
+          <div class="links">
+            <a class="btn" href="https://arxiv.org/abs/2607.12122" target="_blank" rel="noopener">Abstract</a>
+            <a class="btn btn-pdf" href="https://arxiv.org/pdf/2607.12122" target="_blank" rel="noopener">PDF</a>
+          </div>
+        </article></div>
+    </section>
+    <section class="category" id="cat-9">
+      <header class="cat-header">
+        <h2>Agent 系统框架与决策接口</h2>
+        <span class="badge">2 篇</span>
+      </header>
+      <div class="cat-summary">
+        <div class="summary-label">类别综述</div>
+        <p>本组共 2 篇，提供可组合的系统设计抽象与统一决策接口。MyAG 用三图抽象解耦组件/流程/执行；Multi-Head Latent Control 提供统一决策控制接口。面向搭建与分析复杂 Agent 系统时的工程骨架。</p>
+      </div>
+      <div class="papers">
+        <article class="paper">
+          <div class="paper-top">
+            <div class="tags"><span class="tag">LLM Agent</span></div>
+            <span class="digest-date">Digest 2026-07-17</span>
+          </div>
+          <h3 class="paper-title"><a href="https://arxiv.org/abs/2607.14277" target="_blank" rel="noopener">Multi-Head Latent Control: A Unified Interface for LLM Agent Decision Making</a></h3>
+          <div class="paper-meta">
+            <span class="arxiv-id"><a href="https://arxiv.org/abs/2607.14277" target="_blank" rel="noopener">arXiv:2607.14277</a></span>
+            <span class='authors'>Amirhosein Ghasemabadi, Ruichen Chen, Bahador Rashidi, Di Niu</span>
+          </div>
+          <p class='one-line'>Multi-Head Latent Control提出LLM Agent决策的统一控制接口MHLC</p>
+          <p class='detail'>论文针对LLM Agent推理时决策能力不足的问题，提出Multi-Head Latent Control（MHLC）统一框架。核心创新在于通过多头潜在控制机制，使Agent能够自主决定继续推理、调用外部工具、请求更多信息或放弃决策。在多个基准测试上的实验表明该方法显著提升了Agent的决策可靠性和灵活性。</p>
+          <div class="links">
+            <a class="btn" href="https://arxiv.org/abs/2607.14277" target="_blank" rel="noopener">Abstract</a>
+            <a class="btn btn-pdf" href="https://arxiv.org/pdf/2607.14277" target="_blank" rel="noopener">PDF</a>
+          </div>
+        </article>
+        <article class="paper">
+          <div class="paper-top">
+            <div class="tags"><span class="tag">LLM Agent</span></div>
+            <span class="digest-date">Digest 2026-07-16</span>
+          </div>
+          <h3 class="paper-title"><a href="https://arxiv.org/abs/2607.13474" target="_blank" rel="noopener">MyAG: A Graph-Based Framework for Designing and Analyzing Composable LLM Agent Systems</a></h3>
+          <div class="paper-meta">
+            <span class="arxiv-id"><a href="https://arxiv.org/abs/2607.13474" target="_blank" rel="noopener">arXiv:2607.13474</a></span>
+            <span class='authors'>Zhisong Zhang</span>
+          </div>
+          <p class='one-line'>提出基于三图抽象的可组合LLM Agent系统设计框架，实现组件、流程、执行的解耦。</p>
+          <p class='detail'>论文提出MyAG框架，通过组件图、工作流图、搜索图三层图抽象实现LLM Agent系统的模块化设计与分析。核心创新在于将Agent系统解耦为可独立设计、灵活组合的模块，用户可跨系统复用相同组件并切换不同执行逻辑。该框架为复杂Agent系统的工程化开发提供统一方法论，支持系统的可解释性分析和性能优化。实验验证了框架在异构Agent系统设计中的高效性与灵活性。（研究问题：Agent系统设计；方法：三图抽象解耦；结论：模块化设计提升系统可复用性）</p>
+          <div class="links">
+            <a class="btn" href="https://arxiv.org/abs/2607.13474" target="_blank" rel="noopener">Abstract</a>
+            <a class="btn btn-pdf" href="https://arxiv.org/pdf/2607.13474" target="_blank" rel="noopener">PDF</a>
+          </div>
+        </article></div>
+    </section>
+    <section class="category" id="cat-10">
+      <header class="cat-header">
+        <h2>深度研究与类比推理 Agent</h2>
+        <span class="badge">1 篇</span>
+      </header>
+      <div class="cat-summary">
+        <div class="summary-label">类别综述</div>
+        <p>本组共 1 篇，定义并评测“类比深度研究”任务：检索并整合历史类比以支持前瞻分析。工作构建 ADR-bench，评估 LLM Agent 从历史案例中抽取可迁移洞察的能力，把深度研究从事实汇总推进到类比迁移。</p>
+      </div>
+      <div class="papers">
+        <article class="paper">
+          <div class="paper-top">
+            <div class="tags"><span class="tag">LLM Agent</span></div>
+            <span class="digest-date">Digest 2026-07-16</span>
+          </div>
+          <h3 class="paper-title"><a href="https://arxiv.org/abs/2607.13602" target="_blank" rel="noopener">Analogical Deep Research: Retrieving and Integrating Historical Analogies for Foresight Analysis</a></h3>
+          <div class="paper-meta">
+            <span class="arxiv-id"><a href="https://arxiv.org/abs/2607.13602" target="_blank" rel="noopener">arXiv:2607.13602</a></span>
+            <span class='authors'>Yongqiang Chen, Guangyi Chen, Yuewen Sun, Kun Zhang</span>
+          </div>
+          <p class='one-line'>定义类比深度研究任务，构建ADR-bench评估LLM Agent从历史案例中获取前瞻洞察的能力。</p>
+          <p class='detail'>论文提出类比深度研究（Analogical Deep Research）新任务，探索LLM Agent利用历史案例进行前瞻分析的能力。研究构建了首个ADR-bench基准，评估Agent检索、结构化整合历史类比的能力。核心创新在于将结构化历史类比融入Agent推理流程，增强其在复杂情境下的分析深度。实验表明现有Agent在类比检索和整合方面存在明显不足，为增强Agent推理能力提供新方向。（研究问题：Agent类比推理；方法：历史案例检索与整合；结论：Agent类比能力有待提升）</p>
+          <div class="links">
+            <a class="btn" href="https://arxiv.org/abs/2607.13602" target="_blank" rel="noopener">Abstract</a>
+            <a class="btn btn-pdf" href="https://arxiv.org/pdf/2607.13602" target="_blank" rel="noopener">PDF</a>
+          </div>
+        </article></div>
+    </section>
+    <p class="footer">Generated from live digests · arXiv only · standalone HTML for yzbcs.github.io/research</p>
+  </div>
+</body>
+</html>
