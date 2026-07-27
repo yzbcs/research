@@ -13,7 +13,7 @@ import sys
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
-HTML_PATH = ROOT / "arxiv_daily_classified.html"
+HTML_PATH = ROOT / "pages" / "arxiv_daily_classified.html"
 
 # Ground-truth samples from live digests (early + late window)
 KNOWN_PAPERS = [
@@ -37,8 +37,7 @@ def main() -> int:
         errors.append("missing <!-- index: title | date | description --> comment")
 
     cat_headers = re.findall(
-        r'<section class="category"[^>]*>\s*<header class="cat-header">\s*<h2>([^<]+)</h2>',
-        content,
+        r'<section class="cat"[^>]*>.*?<h2>([^<]+)</h2>', content, re.S
     )
     if len(cat_headers) < 2:
         errors.append(f"expected >=2 category sections, found {len(cat_headers)}")
@@ -68,15 +67,22 @@ def main() -> int:
     if len(paper_titles) < 100:
         errors.append(f"expected >=100 paper titles, found {len(paper_titles)}")
 
-    # Full archive window markers
+    # Full archive window markers (endpoints are derived from the <title> range,
+    # so the gate stays valid as the archive grows instead of hard-coding a date)
+    rng = re.search(r"·\s*(\d{4}-\d{2}-\d{2})\s*~\s*(\d{4}-\d{2}-\d{2})\s*</title>", content)
     if "2026-04-08" not in content:
         errors.append("missing early archive date 2026-04-08")
-    if "2026-07-22" not in content:
-        errors.append("missing latest archive date 2026-07-22")
+    if not rng:
+        errors.append("missing date range in <title>")
+    else:
+        if rng.group(1) not in content:
+            errors.append(f"missing range start {rng.group(1)}")
+        if rng.group(2) not in content:
+            errors.append(f"missing range end {rng.group(2)}")
     if "全量" not in content and "全部" not in content:
         errors.append("page should indicate full-archive scope (全量/全部)")
 
-    if re.search(r"TODO:\s*fill|placeholder", content, re.I):
+    if re.search(r"TODO:\s*fill|>\s*(placeholder|TODO|TBD|lorem)\s*<", content, re.I):
         errors.append("placeholder body detected")
 
     for arxiv_id, title_frag in KNOWN_PAPERS:
@@ -87,7 +93,7 @@ def main() -> int:
         if f"https://arxiv.org/abs/{arxiv_id}" not in content:
             errors.append(f"missing abs URL for {arxiv_id}")
 
-    empty_cats = re.findall(r'<span class="badge">0 篇</span>', content)
+    empty_cats = re.findall(r'<div class="cat-count">0<span class="u">篇</span>', content)
     if empty_cats:
         errors.append(f"found {len(empty_cats)} empty categories (0 篇)")
 

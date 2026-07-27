@@ -8,7 +8,7 @@ Public site:
 
 ## How It Works
 
-- Put each standalone `.html` file in the repository root.
+- Put each standalone `.html` file in the `pages/` directory (the root `index.html` is the site entry).
 - Add an index comment near the top of each HTML file:
 
 ```html
@@ -19,7 +19,7 @@ Public site:
 </html>
 ```
 
-- `scripts/gen_index.py` scans root-level HTML files and regenerates `index.html`.
+- `scripts/gen_index.py` scans `pages/*.html` and regenerates the root `index.html` entry.
 - The GitHub Actions workflow runs on every push to `main`, generates the index, and deploys the whole repository to GitHub Pages.
 
 ## Add A New HTML Page
@@ -34,9 +34,9 @@ cd research
 Add or copy your HTML file into the repository root:
 
 ```bash
-cp /path/to/my_page.html ./my_page.html
+cp /path/to/my_page.html pages/my_page.html
 python3 scripts/gen_index.py
-git add my_page.html index.html
+git add pages/my_page.html index.html
 git commit -m "Add my research page"
 git push
 ```
@@ -44,7 +44,7 @@ git push
 After GitHub Actions finishes, open:
 
 ```text
-https://yzbcs.github.io/research/my_page.html
+https://yzbcs.github.io/research/pages/my_page.html
 ```
 
 The index page is:
