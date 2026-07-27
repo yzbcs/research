@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""扫描 pages/ 下的 HTML 研究页面，生成仓库根目录的中文 index.html 入口。"""
+"""为根目录下的 HTML 研究页面生成中文 index.html。"""
 
 from __future__ import annotations
 
@@ -9,8 +9,7 @@ from datetime import datetime
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
-PAGES_DIR = ROOT / "pages"            # standalone research pages live here
-OUTPUT_FILE = ROOT / "index.html"     # site entry served at the repo root
+OUTPUT_FILE = ROOT / "index.html"
 SKIP_FILES = {"index.html"}
 SKIP_DIRS = {".git", ".github", "scripts", "node_modules", "__pycache__"}
 
@@ -55,9 +54,7 @@ def parse_html_metadata(path: Path) -> dict[str, str]:
 
 def iter_pages() -> list[Path]:
     pages: list[Path] = []
-    if not PAGES_DIR.is_dir():
-        return pages
-    for path in PAGES_DIR.glob("*.html"):
+    for path in ROOT.glob("*.html"):
         if path.name in SKIP_FILES:
             continue
         if any(part in SKIP_DIRS for part in path.parts):
@@ -71,7 +68,7 @@ def render_item(path: Path) -> str:
     date = meta["date"] or datetime.fromtimestamp(path.stat().st_mtime).strftime("%Y-%m-%d")
     title = html.escape(meta["title"])
     description = html.escape(meta["description"])
-    href = html.escape(path.relative_to(ROOT).as_posix())
+    href = html.escape(path.name)
 
     return f"""
         <li class="item">

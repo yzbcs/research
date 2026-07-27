@@ -22,7 +22,7 @@ from datetime import date
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
-DEFAULT_OUT = ROOT / "pages" / "arxiv_daily_classified.html"
+DEFAULT_OUT = ROOT / "arxiv_daily_classified.html"
 STUDY_BASE = "https://raw.githubusercontent.com/yzbcs/yzbcs.github.io/master/study/"
 PROXY = "http://127.0.0.1:7890"
 

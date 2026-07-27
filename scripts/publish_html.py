@@ -52,24 +52,21 @@ def main() -> None:
     dest_name = args.name or slugify_filename(src.name)
     if not dest_name.endswith(".html"):
         dest_name += ".html"
-    dest = ROOT / "pages" / dest_name
-    dest.parent.mkdir(parents=True, exist_ok=True)
+    dest = ROOT / dest_name
 
     shutil.copyfile(src, dest)
     title = args.title or dest.stem.replace("_", " ").replace("-", " ").title()
     ensure_index_comment(dest, title, args.description, args.date)
     run(["python3", "scripts/gen_index.py"])
 
-    rel = dest.relative_to(ROOT).as_posix()
-    print(f"Copied: {rel}")
+    print(f"Copied: {dest.relative_to(ROOT)}")
     print("Review the page, then publish with:")
-    print(f"  git add {rel} index.html")
+    print(f"  git add {dest.name} index.html")
     print(f"  git commit -m \"Add {dest.stem}\"")
     print("  git push")
 
     if args.commit:
-        rel = dest.relative_to(ROOT).as_posix()
-        run(["git", "add", rel, "index.html"])
+        run(["git", "add", dest.name, "index.html"])
         run(["git", "commit", "-m", f"Add {dest.stem}"])
     if args.push:
         run(["git", "push"])

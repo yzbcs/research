@@ -13,7 +13,7 @@ import sys
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
-HTML_PATH = ROOT / "pages" / "arxiv_daily_classified.html"
+HTML_PATH = ROOT / "arxiv_daily_classified.html"
 
 # Ground-truth samples from live digests (early + late window)
 KNOWN_PAPERS = [

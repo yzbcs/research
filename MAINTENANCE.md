@@ -20,9 +20,9 @@ cd research
 之后每次新增页面：
 
 ```bash
-cp /path/to/your_page.html pages/your_page.html
+cp /path/to/your_page.html ./your_page.html
 python3 scripts/gen_index.py
-git add pages/your_page.html index.html
+git add your_page.html index.html
 git commit -m "Add your page"
 git push
 ```
@@ -30,7 +30,7 @@ git push
 推送后，GitHub Actions 会自动部署。页面地址会是：
 
 ```text
-https://yzbcs.github.io/research/pages/your_page.html
+https://yzbcs.github.io/research/your_page.html
 ```
 
 ## 推荐的 HTML 头部注释
@@ -53,7 +53,7 @@ python3 scripts/publish_html.py /path/to/your_page.html --title "页面标题" -
 
 脚本会：
 
-1. 把 HTML 复制到 pages/ 目录。
+1. 把 HTML 复制到仓库根目录。
 2. 如果没有索引注释，就自动补一行。
 3. 重新生成 `index.html`。
 4. 打印接下来要运行的 `git add / commit / push` 命令。
@@ -78,9 +78,9 @@ git push
 ## 删除页面
 
 ```bash
-rm pages/old_page.html
+rm old_page.html
 python3 scripts/gen_index.py
-git add pages/old_page.html index.html
+git add old_page.html index.html
 git commit -m "Remove old page"
 git push
 ```
