@@ -70,13 +70,15 @@
 
     /* LAYOUT */
     .layout{display:grid;grid-template-columns:var(--side-w) 1fr;gap:32px;margin-top:26px;align-items:start}
-    .toc{position:sticky;top:calc(var(--tool-h) + 20px);max-height:calc(100vh - var(--tool-h) - 40px);overflow:auto;padding-right:6px}
-    .toc h3{font-family:var(--ff-mono);font-size:10px;letter-spacing:.2em;text-transform:uppercase;color:var(--muted);margin-bottom:12px}
-    .toc-list{list-style:none;display:flex;flex-direction:column;gap:3px}
-    .toc-item{display:block;text-decoration:none;color:var(--ink-2);border:1px solid transparent;border-radius:6px;padding:8px 10px;position:relative;transition:.15s}
-    .toc-item .tn{font-size:12.5px;font-weight:600;line-height:1.25;display:block;padding-right:30px}
-    .toc-item .tc{position:absolute;top:8px;right:10px;font-family:var(--ff-mono);font-size:10.5px;color:var(--muted-2);font-weight:600}
-    .toc-item .bar{height:3px;background:var(--line);border-radius:2px;margin-top:7px;overflow:hidden}
+    .toc{position:sticky;top:calc(var(--tool-h) + 20px);align-self:start;padding-right:6px}
+    .toc-top{display:block;font-family:var(--ff-mono);font-size:10.5px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--accent);text-decoration:none;padding:7px 8px;margin-bottom:10px;border:1px solid var(--line);border-radius:6px;text-align:center;transition:.15s}
+    .toc-top:hover{background:var(--accent-soft);border-color:#bcd3cd}
+    .toc h3{font-family:var(--ff-mono);font-size:10px;letter-spacing:.2em;text-transform:uppercase;color:var(--muted);margin:0 0 8px}
+    .toc-list{list-style:none;display:flex;flex-direction:column;gap:2px}
+    .toc-item{display:block;text-decoration:none;color:var(--ink-2);border:1px solid transparent;border-radius:6px;padding:5px 8px;position:relative;transition:.15s}
+    .toc-item .tn{font-size:11.5px;font-weight:600;line-height:1.2;display:block;padding-right:26px}
+    .toc-item .tc{position:absolute;top:5px;right:8px;font-family:var(--ff-mono);font-size:10px;color:var(--muted-2);font-weight:600}
+    .toc-item .bar{height:2px;background:var(--line);border-radius:2px;margin-top:4px;overflow:hidden}
     .toc-item .bar i{display:block;height:100%;background:var(--muted-2);border-radius:2px;transition:background .15s}
     .toc-item:hover{background:var(--card);border-color:var(--line)}
     .toc-item.active{background:var(--accent-soft);border-color:#bcd3cd}
@@ -188,6 +190,7 @@
 
     <div class="layout">
       <aside class="toc" aria-label="类别目录">
+        <a class="toc-top" href="#" id="tocTop">↑ 回到顶部</a>
         <h3>类别目录</h3>
         <div class="toc-list"><a class="toc-item" href="#cat-0"><span class="tn">Agent 安全、对抗、隔离与对齐</span><span class="tc">57</span><span class="bar"><i style="width:65%"></i></span></a><a class="toc-item" href="#cat-1"><span class="tn">Agent 调试、可观测与错误恢复</span><span class="tc">26</span><span class="bar"><i style="width:30%"></i></span></a><a class="toc-item" href="#cat-2"><span class="tn">评测基准、失效分析与可信评估</span><span class="tc">88</span><span class="bar"><i style="width:100%"></i></span></a><a class="toc-item" href="#cat-3"><span class="tn">多 Agent 协作、社会模拟与组织</span><span class="tc">38</span><span class="bar"><i style="width:43%"></i></span></a><a class="toc-item" href="#cat-4"><span class="tn">工具调用、MCP、API 与环境交互</span><span class="tc">14</span><span class="bar"><i style="width:16%"></i></span></a><a class="toc-item" href="#cat-5"><span class="tn">Skill 学习、检索、演化与生态</span><span class="tc">87</span><span class="bar"><i style="width:99%"></i></span></a><a class="toc-item" href="#cat-6"><span class="tn">记忆系统、经验库与长期上下文</span><span class="tc">65</span><span class="bar"><i style="width:74%"></i></span></a><a class="toc-item" href="#cat-7"><span class="tn">规划、推理、搜索与决策控制</span><span class="tc">50</span><span class="bar"><i style="width:57%"></i></span></a><a class="toc-item" href="#cat-8"><span class="tn">强化学习、训练与自改进</span><span class="tc">56</span><span class="bar"><i style="width:64%"></i></span></a><a class="toc-item" href="#cat-9"><span class="tn">GUI / 浏览器 / 计算机操控 Agent</span><span class="tc">11</span><span class="bar"><i style="width:12%"></i></span></a><a class="toc-item" href="#cat-10"><span class="tn">代码、软件工程与 Dev Agent</span><span class="tc">13</span><span class="bar"><i style="width:15%"></i></span></a><a class="toc-item" href="#cat-11"><span class="tn">多模态、视觉、视频与具身感知</span><span class="tc">20</span><span class="bar"><i style="width:23%"></i></span></a><a class="toc-item" href="#cat-12"><span class="tn">端侧、机器人与垂直领域应用</span><span class="tc">13</span><span class="bar"><i style="width:15%"></i></span></a><a class="toc-item" href="#cat-13"><span class="tn">行为、角色、叙事与可控性</span><span class="tc">12</span><span class="bar"><i style="width:14%"></i></span></a><a class="toc-item" href="#cat-14"><span class="tn">OpenClaw 与相关生态</span><span class="tc">29</span><span class="bar"><i style="width:33%"></i></span></a><a class="toc-item" href="#cat-15"><span class="tn">Agent 系统框架、运行时与基础设施</span><span class="tc">52</span><span class="bar"><i style="width:59%"></i></span></a><a class="toc-item" href="#cat-16"><span class="tn">其他 / 跨领域主题</span><span class="tc">15</span><span class="bar"><i style="width:17%"></i></span></a></div>
       </aside>
@@ -250,6 +253,8 @@
       var tt=document.getElementById('totop');
       window.addEventListener('scroll',function(){tt.classList.toggle('show',window.scrollY>640);},{passive:true});
       tt.addEventListener('click',function(){window.scrollTo({top:0,behavior:'smooth'});});
+      var ttop=document.getElementById('tocTop');
+      if(ttop) ttop.addEventListener('click',function(e){e.preventDefault();window.scrollTo({top:0,behavior:'smooth'});});
     })();
 
   </script>

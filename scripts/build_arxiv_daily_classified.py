@@ -437,13 +437,15 @@ STYLES = r"""
 
     /* LAYOUT */
     .layout{display:grid;grid-template-columns:var(--side-w) 1fr;gap:32px;margin-top:26px;align-items:start}
-    .toc{position:sticky;top:calc(var(--tool-h) + 20px);max-height:calc(100vh - var(--tool-h) - 40px);overflow:auto;padding-right:6px}
-    .toc h3{font-family:var(--ff-mono);font-size:10px;letter-spacing:.2em;text-transform:uppercase;color:var(--muted);margin-bottom:12px}
-    .toc-list{list-style:none;display:flex;flex-direction:column;gap:3px}
-    .toc-item{display:block;text-decoration:none;color:var(--ink-2);border:1px solid transparent;border-radius:6px;padding:8px 10px;position:relative;transition:.15s}
-    .toc-item .tn{font-size:12.5px;font-weight:600;line-height:1.25;display:block;padding-right:30px}
-    .toc-item .tc{position:absolute;top:8px;right:10px;font-family:var(--ff-mono);font-size:10.5px;color:var(--muted-2);font-weight:600}
-    .toc-item .bar{height:3px;background:var(--line);border-radius:2px;margin-top:7px;overflow:hidden}
+    .toc{position:sticky;top:calc(var(--tool-h) + 20px);align-self:start;padding-right:6px}
+    .toc-top{display:block;font-family:var(--ff-mono);font-size:10.5px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--accent);text-decoration:none;padding:7px 8px;margin-bottom:10px;border:1px solid var(--line);border-radius:6px;text-align:center;transition:.15s}
+    .toc-top:hover{background:var(--accent-soft);border-color:#bcd3cd}
+    .toc h3{font-family:var(--ff-mono);font-size:10px;letter-spacing:.2em;text-transform:uppercase;color:var(--muted);margin:0 0 8px}
+    .toc-list{list-style:none;display:flex;flex-direction:column;gap:2px}
+    .toc-item{display:block;text-decoration:none;color:var(--ink-2);border:1px solid transparent;border-radius:6px;padding:5px 8px;position:relative;transition:.15s}
+    .toc-item .tn{font-size:11.5px;font-weight:600;line-height:1.2;display:block;padding-right:26px}
+    .toc-item .tc{position:absolute;top:5px;right:8px;font-family:var(--ff-mono);font-size:10px;color:var(--muted-2);font-weight:600}
+    .toc-item .bar{height:2px;background:var(--line);border-radius:2px;margin-top:4px;overflow:hidden}
     .toc-item .bar i{display:block;height:100%;background:var(--muted-2);border-radius:2px;transition:background .15s}
     .toc-item:hover{background:var(--card);border-color:var(--line)}
     .toc-item.active{background:var(--accent-soft);border-color:#bcd3cd}
@@ -578,6 +580,8 @@ SCRIPT = r"""
       var tt=document.getElementById('totop');
       window.addEventListener('scroll',function(){tt.classList.toggle('show',window.scrollY>640);},{passive:true});
       tt.addEventListener('click',function(){window.scrollTo({top:0,behavior:'smooth'});});
+      var ttop=document.getElementById('tocTop');
+      if(ttop) ttop.addEventListener('click',function(e){e.preventDefault();window.scrollTo({top:0,behavior:'smooth'});});
     })();
 """
 
@@ -734,6 +738,7 @@ def render_html(papers: list[dict], generated: str | None = None) -> str:
 
     <div class="layout">
       <aside class="toc" aria-label="类别目录">
+        <a class="toc-top" href="#" id="tocTop">↑ 回到顶部</a>
         <h3>类别目录</h3>
         <div class="toc-list">{''.join(toc_items)}</div>
       </aside>
