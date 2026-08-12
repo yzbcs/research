@@ -166,6 +166,14 @@ def clean_text(s: str) -> str:
     return re.sub(r"\s+", " ", s).strip()
 
 
+def clean_digest_field(s: str) -> str:
+    """Normalize digest prose and drop the archive's parser-error sentinel."""
+    value = clean_text(s)
+    if "LLM 解析失败，请检查 API 响应" in value:
+        return ""
+    return value
+
+
 def field_text(p: dict, field: str) -> str:
     if field == "T":
         return p.get("title") or ""
@@ -196,6 +204,9 @@ def parse_daily_html(path: Path, digest_date: str) -> list[dict]:
         title_m = re.search(r'class="card-title"[^>]*>\s*(?:<a[^>]*>)?([^<]+)', piece)
         tags = re.findall(r'class="tag"[^>]*>([^<]+)', piece)
         authors_m = re.search(r'class="card-byline"[^>]*>([^<]+)', piece)
+        paper_date_m = re.search(
+            r'class="card-date"[^>]*>(\d{4}-\d{2}-\d{2})</span>', piece
+        )
         summary_m = re.search(r'class="summary"[^>]*>(.*?)</div>', piece, re.S)
         detail_m = re.search(r'class="detail-body"[^>]*>(.*?)</div>', piece, re.S)
         arxiv_m = re.search(r"https?://arxiv\.org/abs/([\d.]+(?:v\d+)?)", piece)
@@ -205,12 +216,12 @@ def parse_daily_html(path: Path, digest_date: str) -> list[dict]:
         one = re.sub(
             r"^💡\s*一句话总结\s*",
             "",
-            clean_text(summary_m.group(1) if summary_m else ""),
+            clean_digest_field(summary_m.group(1) if summary_m else ""),
         ).strip()
         detail = re.sub(
             r"^论文解读\s*",
             "",
-            clean_text(detail_m.group(1) if detail_m else ""),
+            clean_digest_field(detail_m.group(1) if detail_m else ""),
         ).strip()
         papers.append(
             {
@@ -223,6 +234,7 @@ def parse_daily_html(path: Path, digest_date: str) -> list[dict]:
                 "arxiv_url": f"https://arxiv.org/abs/{arxiv_id}",
                 "pdf_url": f"https://arxiv.org/pdf/{arxiv_id}",
                 "digest_date": digest_date,
+                "paper_date": paper_date_m.group(1) if paper_date_m else digest_date,
             }
         )
     return papers
