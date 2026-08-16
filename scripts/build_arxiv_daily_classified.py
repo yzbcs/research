@@ -343,6 +343,21 @@ def write_category_summary(cat: str, items: list[dict]) -> str:
     return templates.get(cat, f"本组共 {n} 篇。涵盖：{sample}。")
 
 
+def digest_dates_in_dir(daily_dir: Path) -> list[str]:
+    """Return sorted YYYY-MM-DD dates from daily_*.html filenames.
+
+    Includes rest-day digests that contain no arXiv cards, so the visible
+    archive window can end on the latest study push rather than the last
+    paper-bearing weekday.
+    """
+    dates: list[str] = []
+    for path in daily_dir.glob("*.html"):
+        match = re.search(r"(20\d{2}-\d{2}-\d{2})", path.name)
+        if match:
+            dates.append(match.group(1))
+    return sorted(set(dates))
+
+
 def load_papers_from_dir(daily_dir: Path) -> list[dict]:
     all_papers: list[dict] = []
     for f in sorted(daily_dir.glob("*.html")):
@@ -598,7 +613,11 @@ SCRIPT = r"""
 """
 
 
-def render_html(papers: list[dict], generated: str | None = None) -> str:
+def render_html(
+    papers: list[dict],
+    generated: str | None = None,
+    archive_to: str | None = None,
+) -> str:
     """Render the full classification HTML.
 
     Layout = editorial "Archive" masthead + sticky toolbar (search / tag chips /
@@ -621,7 +640,11 @@ def render_html(papers: list[dict], generated: str | None = None) -> str:
 
     summaries = {c: write_category_summary(c, by_cat[c]) for c in cat_order}
     all_dates = sorted({p["digest_date"] for p in papers})
-    date_range = f"{all_dates[0]} ~ {all_dates[-1]}" if all_dates else ""
+    window_start = all_dates[0] if all_dates else (generated or "")
+    window_end = all_dates[-1] if all_dates else (generated or "")
+    if archive_to and (not window_end or archive_to > window_end):
+        window_end = archive_to
+    date_range = f"{window_start} ~ {window_end}" if window_start else window_end
     day_count = len(all_dates)
     new_dates = set(all_dates[-5:]) if all_dates else set()
     new_count = sum(1 for p in papers if p["digest_date"] in new_dates)
@@ -775,14 +798,18 @@ def build(daily_dir: Path, out_path: Path, generated: str | None = None) -> dict
     papers = load_papers_from_dir(daily_dir)
     if not papers:
         raise SystemExit(f"No arXiv papers parsed from {daily_dir}")
-    html = render_html(papers, generated=generated)
+    file_dates = digest_dates_in_dir(daily_dir)
+    archive_to = file_dates[-1] if file_dates else None
+    html = render_html(papers, generated=generated, archive_to=archive_to)
     out_path.write_text(html, encoding="utf-8")
     by_cat: Counter[str] = Counter(classify_paper(p) for p in papers)
+    paper_max = max(p["digest_date"] for p in papers)
     meta = {
         "paper_count": len(papers),
         "categories": dict(by_cat.most_common()),
         "date_min": min(p["digest_date"] for p in papers),
-        "date_max": max(p["digest_date"] for p in papers),
+        "date_max": archive_to or paper_max,
+        "paper_to": paper_max,
         "out": str(out_path),
         "bytes": out_path.stat().st_size,
     }

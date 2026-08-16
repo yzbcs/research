@@ -143,6 +143,8 @@ def build_data(previous: dict, daily_dir: Path, as_of: str) -> dict:
     paper_to = max(paper["date"] for paper in paper_rows)
     recent_cutoff = (date.fromisoformat(paper_to) - timedelta(days=6)).isoformat()
     digest_dates = [paper["digest_date"] for paper in papers]
+    file_dates = classified.digest_dates_in_dir(daily_dir)
+    archive_to = max([*digest_dates, *file_dates, as_of])
 
     previous_categories = {category["id"]: category for category in previous["categories"]}
     categories = []
@@ -165,7 +167,7 @@ def build_data(previous: dict, daily_dir: Path, as_of: str) -> dict:
             "title": "arXiv 论文灵感图谱",
             "as_of": as_of,
             "from": min(digest_dates),
-            "to": max(digest_dates),
+            "to": archive_to,
             "paper_to": paper_to,
             "papers": len(paper_rows),
             "categories": len(categories),

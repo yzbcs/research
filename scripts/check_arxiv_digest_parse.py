@@ -8,6 +8,8 @@ acceptance gates; one older digest is a control that still yields arXiv cards.
 
 from __future__ import annotations
 
+import json
+import re
 import sys
 from pathlib import Path
 
@@ -91,6 +93,36 @@ def main() -> int:
 
     if parsed.get("2026-04-08") is not None and len(parsed["2026-04-08"]) < 1:
         errors.append("control digest 2026-04-08 yielded no arXiv cards")
+
+    file_dates = classified.digest_dates_in_dir(DAILY_DIR)
+    if not file_dates:
+        errors.append("no digest filenames in cache")
+    else:
+        archive_to = file_dates[-1]
+        classified_html = (ROOT / "arxiv_daily_classified.html").read_text(encoding="utf-8")
+        title_rng = re.search(
+            r"·\s*(\d{4}-\d{2}-\d{2})\s*~\s*(\d{4}-\d{2}-\d{2})\s*</title>",
+            classified_html,
+        )
+        if not title_rng or title_rng.group(2) != archive_to:
+            errors.append(
+                f"classified title window end {title_rng.group(2) if title_rng else None} "
+                f"!= latest digest {archive_to}"
+            )
+        atlas_html = (ROOT / "arxiv_idea_atlas.html").read_text(encoding="utf-8")
+        match = re.search(
+            r'<script type="application/json" id="arxivIdeaAtlasData">(.*?)</script>',
+            atlas_html,
+            re.S,
+        )
+        if not match:
+            errors.append("atlas payload missing")
+        else:
+            meta = json.loads(match.group(1))["meta"]
+            if meta.get("to") != archive_to:
+                errors.append(f"atlas meta.to {meta.get('to')!r} != latest digest {archive_to}")
+            if meta.get("as_of") != archive_to:
+                errors.append(f"atlas as_of {meta.get('as_of')!r} != latest digest {archive_to}")
 
     if errors:
         print("FAIL:")
