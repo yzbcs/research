@@ -1,0 +1,571 @@
+<!-- index: Jev 数据算法：研究思路与阅读指南 | 2026-10-20 | Training-Recipe：如何通过数据配比更好地训练 Jev；研究思路、A/B 阅读内容与相关文献。 -->
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Jev 数据算法研究与阅读指南</title>
+<style>
+:root {color-scheme:light;--ink:#162c35;--muted:#56696e;--paper:#fafbf8;--line:#dce4df;--accent:#176858;--tint:#edf4ef}
+* {box-sizing:border-box}html{scroll-behavior:smooth;scroll-padding-top:24px}body{margin:0;background:var(--paper);color:var(--ink);font:16px/1.8 -apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC",sans-serif}a{color:var(--accent);text-underline-offset:4px}a:hover{text-decoration-thickness:2px}.mast{padding:42px max(24px,calc((100vw - 1320px)/2));background:#123e37;color:#f5faf5}.mast p{max-width:800px;margin:8px 0}.eyebrow{font-size:13px;letter-spacing:2px;color:#bfd8c7}.mast h1{font-size:36px;line-height:1.35;letter-spacing:-1px;margin:14px 0}.mast a{color:#e5f6d9}.layout{max-width:1370px;margin:auto;display:grid;grid-template-columns:235px minmax(0,1fr);gap:44px;padding:32px 24px 80px}aside{align-self:start;position:sticky;top:24px;max-height:calc(100vh - 48px);overflow:auto;font-size:13px}aside strong{display:block;margin-bottom:14px;font-size:15px}aside a{display:block;padding:7px 0;color:var(--muted);text-decoration:none;line-height:1.5}aside a:hover{color:var(--accent)}main{min-width:0}section+section{border-top:3px solid var(--accent);margin-top:64px;padding-top:28px}main h1{font-size:30px;line-height:1.4;margin:0 0 22px}main h2{font-size:23px;line-height:1.5;margin:42px 0 16px}main h3{font-size:19px;margin:28px 0 10px}p{margin:14px 0}strong{font-weight:650}li{margin:9px 0}ul,ol{padding-left:25px}.table-wrap{width:100%;overflow-x:auto;margin:20px 0 28px}table{width:100%;border-collapse:collapse;font-size:14px;line-height:1.7;min-width:680px}th,td{text-align:left;vertical-align:top;padding:13px 12px;border-bottom:1px solid var(--line);overflow-wrap:anywhere}th{background:var(--tint);font-weight:650}tbody tr:hover{background:#f0f5ef}th:first-child,td:first-child{padding-left:8px}pre{padding:18px;background:var(--tint);overflow:auto;border-radius:5px;font-size:14px;line-height:1.7}code{font-family:ui-monospace,SFMono-Regular,Consolas,monospace}p code{padding:2px 5px;background:var(--tint)}.route{display:grid;grid-template-columns:1fr 1fr;gap:18px;margin:0 0 35px}.route a{display:block;padding:20px;background:var(--tint);text-decoration:none}.route b{font-size:18px;display:block}.route span{color:var(--muted);font-size:14px}.footer{max-width:1000px;margin:0 auto;padding:24px;border-top:1px solid var(--line);color:var(--muted);font-size:13px}@media(max-width:900px){.layout{grid-template-columns:1fr;padding:24px 20px;gap:20px}aside{position:static;max-height:none}aside details:not([open]){display:block}.mast{padding:30px 20px}.mast h1{font-size:28px}main h1{font-size:26px}main h2{font-size:21px}.route{grid-template-columns:1fr}}@media print{aside,.route{display:none}.layout{display:block}.mast{background:white;color:black}.mast a{color:black}.table-wrap{overflow:visible}table{min-width:0;font-size:11px}pre{white-space:pre-wrap}a{color:inherit}}
+</style>
+</head>
+<body>
+<header class="mast"><div class="eyebrow">RESEARCH NOTES · 2026-10-20</div><h1>Jev 数据算法<br>研究思路与阅读指南</h1><p>Training-Recipe：如何通过数据配比更好地训练 Jev？共同阅读 Jev 模型与 EP-Order，再研究数据组织、配比与训练调度。</p><p><a href="#idea">研究思路</a>　<a href="#reading">阅读指南</a>　<a href="https://yzbcs.github.io/research/jev_survey.html">原始综述</a></p></header>
+<div class="layout"><aside><details open><summary><strong>阅读目录</strong></summary><nav><a href="#idea-1">一句话问题</a>
+<a href="#idea-2">与已有 ICML 工作怎样衔接</a>
+<a href="#idea-3">Jev 训练中我们要研究什么</a>
+<a href="#idea-4">从现有模型论文的数据部分出发</a>
+<a href="#idea-5">数据算法的研究范围</a>
+<a href="#idea-6">当前可以比较的算法思路</a>
+<a href="#idea-7">下一步怎样推进</a>
+<a href="#idea-8">文献对候选贡献的约束</a>
+<a href="#reading-1">共同入门 按这个顺序读</a>
+<a href="#reading-2">共同研究基础 团队的 ICML 数据排序论文</a>
+<a href="#reading-3">A · Jev 数据与训练 recipe</a>
+<a href="#reading-4">B · 数据配比与训练调度</a>
+<a href="#reading-5">近一周值得补读的 10 篇新稿</a>
+<a href="#reading-6">原综述 31 篇模型与训练论文的完整筛分</a>
+<a href="#reading-7">阅读时最容易混淆的四件事</a></nav></details></aside><main><div class="route"><a href="#reading"><b>A · 数据与训练 recipe</b><span>数据来源 → 监督构造 → 训练组织 → 改进问题</span></a><a href="#reading"><b>B · 配比与训练调度</b><span>数据分组 → 配比与顺序 → 计算成本 → 候选算法</span></a></div><section id="idea" aria-label="研究思路"><h1>Jev Training-Recipe 的当前研究思路</h1>
+<h2 id="idea-1">一句话问题</h2>
+<p><strong>如何通过数据配比，更好地训练 Jev？</strong> 本项目定位为一篇 Training-Recipe 论文，核心贡献放在训练数据算法：研究不同数据组如何组织、如何分配训练比例，以及配比是否需要随训练阶段变化，形成有效的 Jev 训练方案。</p>
+<p>研究参考团队此前发表于 ICML 2026 的 <a href="https://proceedings.mlr.press/v306/ye26i.html">Group-wise Data Ordering: Enhancing Instruction Tuning of Large Language Models via Embedding Proximity</a>。同时从现有 Jev 模型论文的数据部分出发，梳理其数据来源、构造方式、监督形式与训练组织，寻找值得改进的具体问题。</p>
+<h2 id="idea-2">与已有 ICML 工作怎样衔接</h2>
+<p>EP-Order 利用样本表示进行分组和排序，并在组切换处混合相邻组的数据。它提供了从数据结构出发改进训练过程的研究基础。<a href="https://proceedings.mlr.press/v306/ye26i.html">论文正式页面</a></p>
+<p>本项目以 Jev 的数据配比为核心，首先研究各类数据应该获得多少训练曝光，再考虑比例是否随阶段调整、是否与顺序联合设计。配比决定“学多少”，排序决定“先学什么”；实验中可以分别固定其中一个来研究另一个。EP-Order 应作为共同必读的前期工作和顺序对照，而不只是后续补充阅读。</p>
+<p>可延续的研究路径是：分析 Jev 训练数据与训练行为，找到现有 recipe 的具体不足，提出对应的数据组织或分配算法，再在相同预算下验证收益。具体不足可能是某类数据投入过多、重要能力覆盖不足、组间训练互相干扰，或者不同阶段需要不同的数据；这些都需要通过数据分析和实验判断。</p>
+<h2 id="idea-3">Jev 训练中我们要研究什么</h2>
+<p>这里的 Jev 风格模型接收状态、问题与候选项，返回受候选集合约束的概率或决策。开源实现可以使用语言模型 logits、专用 head 或候选编码器。<a href="https://arxiv.org/abs/2610.02076">LLM-as-Jev</a>、<a href="https://arxiv.org/abs/2610.17205">Releasing the Inner Jev</a></p>
+<p>对数据算法而言，值得关注的是训练池的异构性：不同来源、任务能力、难度、监督形式和字段数量都可能影响数据价值。我们先了解这些差异如何影响训练，再决定配比依据。跨来源泛化、校准与稳健性是评估训练效果的重要维度，其中哪一项成为主要机制，需要后续证据支持。</p>
+<h2 id="idea-4">从现有模型论文的数据部分出发</h2>
+<p>Intern-Decision 与 SII-Decision 作为目前整理的两篇代表性起点。</p>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>论文</th>
+<th>原文可确认的数据工作</th>
+<th>对我们的启发与边界</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><a href="https://arxiv.org/html/2610.22131">Intern-Decision</a>，§4、Appendix B</td>
+<td>混合合成文本、公开任务分布、合成视觉交互数据；17,880 个样本对应 23,500 个决策，其中 5,500 个样本带图像；多个字段共享完整 JSON 决策骨架</td>
+<td>研究分组时应同时保留来源、任务、字段与样本信息。样本数不能直接当决策数；公开来源也不等于标签全部来自人工。论文没有据此证明某种混合比例最优</td>
+</tr>
+<tr>
+<td><a href="https://arxiv.org/html/2610.03935">SII-Decision / General Decision Models</a>，§6.2、Appendix F.4</td>
+<td>两条自身推理链的末端候选分布形成软目标，再训练不思考时的首 token 读出；按能力组织问题并研究数据量，27B 最终使用 39,279 题</td>
+<td>作者报告模板合成的收益没有迁移到真实问题，以及容易的自产题缺少训练信号。但 48,358 题实验约半个 epoch 即到时间上限，并且扩展组改变了来源混合，因此不能据此推出普遍的数据饱和结论</td>
+</tr>
+</tbody>
+</table></div>
+<p>这两篇作为代表性起点。读完应能区分：数据从哪里来、为什么保留某条样本、怎样生成目标、怎样分配训练曝光，以及最终收益来自哪一步。</p>
+<h2 id="idea-5">数据算法的研究范围</h2>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>层面</th>
+<th>需要研究的问题</th>
+<th>当前定位</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>数据构造与监督</td>
+<td>现有论文用哪些来源，怎样转成决策样本，标签或软目标如何获得？</td>
+<td>建立对训练池的理解，为算法选择提供依据</td>
+</tr>
+<tr>
+<td>数据分组与选择</td>
+<td>按来源、能力、难度还是模型表示分组？哪些样本应保留？</td>
+<td>为配比定义操作对象；是否引入选样算法待判断</td>
+</tr>
+<tr>
+<td>数据配比</td>
+<td>各组分配多少训练 token 或决策曝光？比例固定还是动态变化？</td>
+<td>核心研究问题与贡献落点</td>
+</tr>
+<tr>
+<td>数据顺序与阶段</td>
+<td>是否按组排序或分阶段训练？顺序与配比怎样配合？</td>
+<td>参考 EP-Order，结合具体机制决定是否联合研究</td>
+</tr>
+</tbody>
+</table></div>
+<p>目标是形成有明确依据的数据算法，并解释它为什么能更好地训练 Jev。多收集一些数据、手动调一组比例可以作为探索和基线；最终需要提炼出可复用的规则及其适用条件。</p>
+<h2 id="idea-6">当前可以比较的算法思路</h2>
+<p>这些思路是用于讨论的候选，不是已经确定的模块组合。</p>
+<ul>
+<li><strong>基于数据结构的配比与调度。</strong> 参考 EP-Order 的分组视角，研究 Jev 中什么样的分组有助于分配训练预算，以及固定配比与分阶段配比的差别。</li>
+<li><strong>基于训练反馈的动态配比。</strong> 利用各组学习进度、开发集表现或组间收益调整曝光；参考 <a href="https://arxiv.org/abs/2307.14430">Skill-It</a>、<a href="https://arxiv.org/abs/2411.05735">Aioli</a>、<a href="https://arxiv.org/abs/2310.15393">DoGE</a>，比较它们在 Jev 训练中的适用性。</li>
+</ul>
+<p>选哪条路线，应由现有 recipe 的实际不足、可获得的数据和计算预算共同决定。</p>
+<h2 id="idea-7">下一步怎样推进</h2>
+<ol>
+<li><strong>拆解现有 recipe。</strong> 重点读 Jev 模型论文的数据部分，记录来源、规模、分组、配比、标签、训练阶段与已有消融；缺失信息保留为待确认，不从最终成绩倒推配比有效。</li>
+<li><strong>复用团队的数据算法经验。</strong> 共同阅读 EP-Order，明确它处理的问题和可借鉴的机制，再对比数据混合方法。</li>
+<li><strong>建立可比较的训练起点。</strong> 在确定数据与预算后，固定模型、读出和训练目标，比较原 recipe、简单均衡配比及有依据的候选方法。配比的均衡单位需要说明是样本、决策字段还是输入 token。</li>
+<li><strong>根据现象提出算法。</strong> 先看数据组、曝光量和训练阶段怎样影响结果，再决定使用表示结构、学习进度、迁移估计还是其他信号。</li>
+<li><strong>解释收益并检验泛化。</strong> 固定顺序比较配比，固定曝光比较顺序；涉及筛选时区分组内选样与组间重配。比较训练效果时计入算法自身的额外成本。</li>
+</ol>
+<p>性能可从任务宏平均准确率、NLL、Brier/ECE、最差组表现与计算成本观察；最终主指标和主要实验以选定的研究问题为准。当前处于文献与方案整理阶段，尚未启动以上训练。</p>
+<h2 id="idea-8">文献对候选贡献的约束</h2>
+<p>数据混合已有 Skill-It、Aioli、DoGE 等方法，因此需要说明 Jev 的具体问题和我们的改进。若同时进行筛选与配比，可借鉴 <a href="https://arxiv.org/abs/2610.19343">CGSD</a> 的归因对照。这些工作按路线选择相应对照，不预先把全部方法堆进一个系统。</p>
+</section>
+<section id="reading" aria-label="阅读指南与文献"><h1>Jev 数据算法阅读指南</h1>
+<p>先建立“输入、候选、概率、训练目标”的共同理解，再共同阅读团队的 EP-Order，研究如何通过数据配比更好地训练 Jev。具体算法尚未确定。推荐强度来自与本项目问题的关系，不是论文质量评分。</p>
+<p>所有 arXiv 条目均按预印本使用，不据此声称会议录用或独立复现。表中论文日期沿用 arXiv UTC；检索更新日为北京时间 2026 年 10 月 20 日。</p>
+<h2 id="reading-1">共同入门 按这个顺序读</h2>
+<p>先花约半小时读 <a href="https://typesafe.ai/blog/introducing-system-one-models-and-jev">Introducing System One Models &amp; Jev</a>。这是官方产品与研究介绍，<strong>不是完整方法论文</strong>。只需理解状态、Choice/Noul/Score、候选概率，以及软件为何需要这种接口；其中性能和校准主张要结合后续独立论文判断。</p>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>顺序</th>
+<th>论文</th>
+<th>重点阅读</th>
+<th>读完要能讲清楚</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1</td>
+<td><a href="https://arxiv.org/abs/2610.02076">LLM-as-Jev: LLMs Are Already Jev-Style Decision Models — When and How to Fine-Tune Them</a></td>
+<td>§3，§4.2—4.4，Appendix G</td>
+<td>如何从普通 LLM 读出合法候选概率；何时微调才有收益；KL anchor 保持什么。数据迭代参考过公开 JevBench 错误，因此相关比较属于探索性证据</td>
+</tr>
+<tr>
+<td>2</td>
+<td><a href="https://arxiv.org/abs/2610.17205">Releasing the Inner Jev: A Simple Recipe for Open Decision Models</a></td>
+<td>§3—5，Appendix B、C.1</td>
+<td>冻结读出、LoRA、从 LM head 切片初始化决策 head 各起什么作用；为什么 31B recipe 不能直接假定适合 4B</td>
+</tr>
+<tr>
+<td>3</td>
+<td><a href="https://arxiv.org/abs/2610.22131">Intern-Decision: Efficient Multimodal Decision Making with Autoregressive Masked Language Modeling</a></td>
+<td>§3—4、Appendix B</td>
+<td>一条训练记录怎样变成一个或多个决策字段；文本、公开任务与视觉数据怎样统一；样本数与决策数为什么不同</td>
+</tr>
+<tr>
+<td>4</td>
+<td><a href="https://arxiv.org/abs/2610.03935">General Decision Models: Benchmarking and Insights Beyond Jev</a></td>
+<td>§3、§6.1—6.3、Appendix F.4</td>
+<td>JEVal 测什么；SII-Decision 如何把自身推理后的分布变成首 token 目标；数据量实验能支持什么，不能支持什么</td>
+</tr>
+</tbody>
+</table></div>
+<p>建议前两篇精读方法，后两篇先读指定章节。暂不要求读完四篇全部附录。共读后的交付是一张从原始任务到训练 loss 再到候选概率的图，并拿一个真实来源例子说明每一步；若还未拿到数据，先引用论文中的完整例子并明确来源。</p>
+<p>基础概念只需补齐：softmax、交叉熵/NLL、KL、JS、LoRA、soft label、校准与分组平均。要能区分“分类正确”“概率可靠”“输出合法”，不必先补完整强化学习课程。</p>
+<h2 id="reading-2">共同研究基础 团队的 ICML 数据排序论文</h2>
+<p><a href="https://proceedings.mlr.press/v306/ye26i.html">Group-wise Data Ordering: Enhancing Instruction Tuning of Large Language Models via Embedding Proximity</a>（EP-Order，ICML 2026）应在 A、B 各自精读前共同阅读。重点理解分组依据、组间排序、边界混合，以及实验怎样区分数据结构与训练顺序的作用。</p>
+<p>共同讨论：哪些思想可以用于 Jev 数据配比？配比决定各组训练曝光，顺序决定曝光发生的先后；如何分别验证，再决定是否联合设计？这是本项目的前期研究基础，不要求直接套用原算法。</p>
+<h2 id="reading-3">A · Jev 数据与训练 recipe</h2>
+<p><strong>负责的问题：现有 Jev 论文用了什么数据、怎样构造监督、怎样组织训练，哪些环节值得通过数据算法改进？</strong> 共同阅读的 Intern-Decision 与 SII-Decision 是 recipe 拆解的重点。</p>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>顺序</th>
+<th>核心论文</th>
+<th>与本项目最相关的内容</th>
+<th>阅读交付</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>A1</td>
+<td><a href="https://arxiv.org/abs/2609.35865">PACT: Pairwise-Anchored Calibrated Tuning for Single-Token Typed Decisions</a></td>
+<td>事实改变导致 gold 翻转的成对样本、证据删减、答案编码置换一致性、序数目标</td>
+<td>分开画出“保持语义但换形式”与“改变事实并翻转答案”两条链；说明若选择稳健迁移路线，PACT 怎样成为训练增强/目标对照</td>
+</tr>
+<tr>
+<td>A2</td>
+<td><a href="https://arxiv.org/abs/2610.05107">SearchJev: A Fast and Calibrated System-1 Model for Search Agents</a></td>
+<td>原始标签、派生标签、教师或投票形成软目标；同义中英文字段描述；来源隔离</td>
+<td>列出三种监督来源如何形成概率，哪些概率是构造规则而非真实不确定性的测量</td>
+</tr>
+<tr>
+<td>A3</td>
+<td><a href="https://arxiv.org/abs/2610.03073">SecJev: Bringing Security Expertise to System One Decision Models</a></td>
+<td>八种来源、14 个任务；同一 scene 可有多题；用 scene 内问题数的倒数加权；按真实依赖分组切分</td>
+<td>提出我们应该按 sample、decision 还是 scene 计权，并用一条多字段例子解释差别；不开展攻击研究</td>
+</tr>
+<tr>
+<td>A4</td>
+<td><a href="https://arxiv.org/abs/2610.21412">JevAgentHarness: Benchmarking, Deploying and Training Decision Models That Share Control with LLMs</a></td>
+<td>从学生自身错误后到达的状态构造数据，再用 Jev 标注；孤立题目准确率与闭环成功的差异</td>
+<td>区分正常轨迹、错误恢复状态和最终任务成功；判断我们是否确实需要 agent 数据，避免一开始就扩大到完整 agent 系统</td>
+</tr>
+</tbody>
+</table></div>
+<p>第二轮选读：<a href="https://arxiv.org/abs/2610.17175">FunDM</a> 看无 gold 的概率蒸馏；<a href="https://arxiv.org/abs/2610.09188">From Probabilities to Decisions</a> 看固定标注预算下多教师互补；<a href="https://arxiv.org/abs/2610.26797">Teacher Supervision, Fixed Representations and Calibration</a> 看为什么教师一致性不等于 outcome 正确性。</p>
+<p>A 的最终交付是一份现有 Jev recipe 对照：数据来源与规模、分组与配比、标签获取、训练阶段、已有数据消融及缺失证据。给出少量完整样本，并提出最值得研究的配比问题。现阶段不要求先生成大数据集。</p>
+<h2 id="reading-4">B · 数据配比与训练调度</h2>
+<p><strong>负责的问题：现有数据算法怎样决定每组学多少、什么时候学，哪些机制值得用于 Jev？</strong> 先共同读 EP-Order，再读以下配比方法。</p>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>顺序</th>
+<th>核心论文</th>
+<th>与本项目最相关的内容</th>
+<th>阅读交付</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>B1</td>
+<td><a href="https://arxiv.org/abs/2307.14430">Skill-it! A Data-Driven Skills Framework for Understanding and Training Language Models</a></td>
+<td>技能依赖与在线数据采样</td>
+<td>区分分组、依赖估计和曝光分配，判断在 Jev 中需要哪些条件</td>
+</tr>
+<tr>
+<td>B2</td>
+<td><a href="https://arxiv.org/abs/2411.05735">Aioli: A Unified Optimization Framework for Language Model Data Mixing</a></td>
+<td>混合律、在线影响估计与动态配比</td>
+<td>说明如何更新权重、与分层采样有何差别、额外成本是什么</td>
+</tr>
+<tr>
+<td>B3</td>
+<td><a href="https://arxiv.org/abs/2310.15393">DoGE: Domain Reweighting with Generalization Estimation</a></td>
+<td>用泛化估计学习域采样比例</td>
+<td>分清代理模型与最终模型、目标数据与训练数据，讨论适配成本</td>
+</tr>
+<tr>
+<td>B4</td>
+<td><a href="https://arxiv.org/abs/2305.10429">DoReMi: Optimizing Data Mixtures Speeds Up Language Model Pretraining</a></td>
+<td>小代理模型上的 group DRO 与混合比例迁移</td>
+<td>对比它与依赖驱动、目标驱动配比的差别，提炼可比较的基线</td>
+</tr>
+</tbody>
+</table></div>
+<p>第二轮按发现的问题选读：<a href="https://arxiv.org/abs/2610.24963">DeGMatch</a> 研究梯度公共结构与目标选数；<a href="https://arxiv.org/abs/2610.19343">CGSD</a> 拆分组内筛选和组间重配；<a href="https://arxiv.org/abs/2605.15220">OP-Mix</a> 研究低成本混合搜索；<a href="https://arxiv.org/abs/2604.07963">DoGraph</a> 研究模型视角下的数据域。后两篇不是近一周新稿。</p>
+<p>B 的最终交付是一张方法对照图：分组依据 → 配比或调度规则 → 计算成本 → 适用条件。结合 A 的数据梳理，提出可以比较的算法路线；不预先锁定稳健迁移，也不把所有方法拼成一个系统。</p>
+<h2 id="reading-5">近一周值得补读的 10 篇新稿</h2>
+<p>窗口为 10 月 13—20 日。以下 10 篇不在原综述“模型与训练”31 篇清单中。前三类数据选择论文多数研究生成式 LLM 或视觉模型，<strong>不能称为 Jev 论文</strong>；它们是可借用的方法或归因近邻。摘要级判断不代表已验证算法适配到 Jev。</p>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>日期</th>
+<th>论文</th>
+<th>类别与阅读深度</th>
+<th>对本项目的具体价值</th>
+<th>阅读建议</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>10-18</td>
+<td><a href="https://arxiv.org/abs/2610.24963">DeGMatch</a></td>
+<td>通用数据选择方法；已读 §3 与限制</td>
+<td>最接近“数据价值信号被公共因素干扰”的新工作；核心处理作用于梯度几何，未把公共方向直接归因为答案符号</td>
+<td>B 第二轮</td>
+</tr>
+<tr>
+<td>10-14</td>
+<td><a href="https://arxiv.org/abs/2610.19343">Counterfactual Gate-Support Decomposition</a></td>
+<td>通用方法/实验归因；已读引言与 §3</td>
+<td>提醒筛选会同时改变组内样本和组间比例；用于设计归因对照，不必照搬所有可行性分析</td>
+<td>B 第二轮</td>
+</tr>
+<tr>
+<td>10-18</td>
+<td><a href="https://arxiv.org/abs/2610.25215">Hidden Cartographer: Hidden State Guided Data Selection for Dual Budgeted Instruction Tuning</a></td>
+<td>通用数据选择方法；摘要</td>
+<td>隐状态指导标注，再用已标注样本的精确训练动态筛最终训练集；把标注预算与训练预算分开</td>
+<td>B 第二轮，A 旁听</td>
+</tr>
+<tr>
+<td>10-19</td>
+<td><a href="https://arxiv.org/abs/2610.25751">NADS: Navigator-Guided Data Selection for Mitigating Catastrophic Forgetting in Fine-Tuning</a></td>
+<td>通用数据选择方法；摘要</td>
+<td>先用实际微调 recipe 暴露能力漂移，再选保持原能力的约束样本；关注最差组和遗忘</td>
+<td>B 第二轮</td>
+</tr>
+<tr>
+<td>10-18</td>
+<td><a href="https://arxiv.org/abs/2610.25202">ViCoR: Estimating Visual Necessity via Counterfactual Residuals for Multimodal Medical Data Selection</a></td>
+<td>多模态数据选择方法；摘要</td>
+<td>用反事实残差区分真正需要图像的样本与语言捷径；扩展到多模态 Jev 时有借鉴，当前不作为直接文本基线</td>
+<td>A 第二轮</td>
+</tr>
+<tr>
+<td>10-14</td>
+<td><a href="https://arxiv.org/abs/2610.21007">Mind the Tail: Data Selection Through Sparse Concepts</a></td>
+<td>视觉/多模态数据选择方法；摘要</td>
+<td>通过稀疏概念支持度和边际递减保持长尾覆盖；提醒只按平均迁移收益分配会否丢掉弱势组</td>
+<td>B 选读</td>
+</tr>
+<tr>
+<td>10-14</td>
+<td><a href="https://arxiv.org/abs/2610.20057">Beyond Correctness: Compute-Responsive Data Selection for Reasoning Model Post-Training</a></td>
+<td>推理数据选择方法；摘要</td>
+<td>优先选择增加思考后从失败变成功的样本；可讨论 SII 风格蒸馏该选什么题，但不能直接假定单次前向也获益</td>
+<td>A 第二轮</td>
+</tr>
+<tr>
+<td>10-19</td>
+<td><a href="https://arxiv.org/abs/2610.26797">Teacher Supervision, Fixed Representations and Calibration: Exact Risk Calculations for Candidate-Scoring Decision Models</a></td>
+<td>Jev 相关理论与实证；摘要</td>
+<td>教师软目标、冻结表示与校准各自改变什么；Gaussian/probit 代理理论有明确假设，不能当所有深度模型的定理</td>
+<td>A 第二轮</td>
+</tr>
+<tr>
+<td>10-19</td>
+<td><a href="https://arxiv.org/abs/2610.26325">Typed Decision Models under Prevalence Shift: Decision Training, Calibration, and Implicit Priors</a></td>
+<td>Jev 相关评估研究；摘要</td>
+<td>数据配比可能改变类别先验；区分泛化提升与概率尺度/先验变化。原文也不支持“所有 TDM 在 shift 下特别脆弱”</td>
+<td>共同第二轮</td>
+</tr>
+<tr>
+<td>10-19</td>
+<td><a href="https://arxiv.org/abs/2610.25784">UniJev: Separating Accuracy from Calibration in Trimodal System One Decision Models</a></td>
+<td>Jev 风格方法；摘要</td>
+<td>三模态 SFT、RLCD 与单独置信度监督的作用拆分；避免把 accuracy 增益自动解释为 calibration 增益</td>
+<td>A 第二轮</td>
+</tr>
+</tbody>
+</table></div>
+<p>还需关注两篇架构对照：<a href="https://arxiv.org/abs/2610.18773">Jeva</a> 首发 10 月 13 日、10 月 18 日修订，强调候选对称性与缺失答案；<a href="https://arxiv.org/abs/2610.22066">Prism-1</a> 首发 10 月 15 日、10 月 16 日修订，独立候选评分使顺序不影响结果。它们不是数据配比算法，却会决定“顺序偏差”是否是我们所选模型的真实问题。</p>
+<p>原清单中的 Intern-Decision（10 月 15 日首发）与 Verdict（10 月 14 日首发）已经处于近期窗口；NeoHorse-1（9 月首发、10 月 14 日修订）、SecJev（10 月 2 日首发、10 月 14 日修订）、LLM-as-Jev（10 月 1 日首发、10 月 13 日修订）应标为近期修订，不能再当近期新论文计数。综述其他分类里的 JevAgentHarness 已单独列为 A4。</p>
+<h2 id="reading-6">原综述 31 篇模型与训练论文的完整筛分</h2>
+<p>全部条目已核对 arXiv 摘要与日期。以下保留原综述顺序；“方法”对应 pure method，“方法＋评测”对应 method + benchmark，“其他”是实证或探索性研究。类别是本轮阅读归类，不是作者或会议官方标签。</p>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>序号</th>
+<th>论文与 arXiv 编号</th>
+<th>类型</th>
+<th>阅读安排</th>
+<th>数据算法关系与边界</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1</td>
+<td><a href="https://arxiv.org/abs/2610.22131">Intern-Decision: Efficient Multimodal Decision Making with Autoregressive Masked Language Modeling</a> · 2610.22131</td>
+<td>方法</td>
+<td>共同必读</td>
+<td>合成文本、公开任务与视觉交互数据统一成多字段决策；重点看 §4、Appendix B。贡献同时包含读出结构，不能把成绩全部归于数据。</td>
+</tr>
+<tr>
+<td>2</td>
+<td><a href="https://arxiv.org/abs/2610.20778">Verdict: Encode Once, Decide Many</a> · 2610.20778</td>
+<td>方法</td>
+<td>B 扩展</td>
+<td>共享状态编码并隔离问题，候选顺序不影响结果；主要是架构与效率对照。软 gold 上的更高准确率可能是更接近标注教师。</td>
+</tr>
+<tr>
+<td>3</td>
+<td><a href="https://arxiv.org/abs/2610.17309">StartLux-Decision: AutoThink Decision Models with Reinforcement Learning for Calibrated Deliberative Decisions</a> · 2610.17309</td>
+<td>方法＋评测</td>
+<td>A 扩展</td>
+<td>三阶段训练连接直接决策、推理监督与 RLCD²；DecisionPivot 的事实对比样本有借鉴。自适应推理不是本项目首轮配比变量。</td>
+</tr>
+<tr>
+<td>4</td>
+<td><a href="https://arxiv.org/abs/2610.17205">Releasing the Inner Jev: A Simple Recipe for Open Decision Models</a> · 2610.17205</td>
+<td>方法＋评测</td>
+<td>共同必读</td>
+<td>强冻结读出、简单 LoRA 与 head 初始化；训练池兼有公开和模型标注数据。4B 的教师蒸馏及格式调整说明 recipe 有模型依赖。</td>
+</tr>
+<tr>
+<td>5</td>
+<td><a href="https://arxiv.org/abs/2610.17175">FunDM: Cheap &amp; Label-Free Decision Models from Frozen Language Models</a> · 2610.17175</td>
+<td>方法</td>
+<td>A 第二轮</td>
+<td>不用正确答案标签，用完整冻结模型的候选概率训练浅层 head；适合研究监督成本与教师偏差，主要目标是压缩。</td>
+</tr>
+<tr>
+<td>6</td>
+<td><a href="https://arxiv.org/abs/2610.11692">Can Jev be Your Q or Policy in Reinforcement Learning?</a> · 2610.11692</td>
+<td>方法</td>
+<td>暂缓</td>
+<td>冻结 Jev 用作 RL 参考策略、探索 judge、经验回放评分器；属于用 Jev 改善别的学习器，不是训练 Jev 的数据配比。</td>
+</tr>
+<tr>
+<td>7</td>
+<td><a href="https://arxiv.org/abs/2610.11379">FastJEV: Understanding Redundancy for Compact JEV Inference</a> · 2610.11379</td>
+<td>方法</td>
+<td>暂缓</td>
+<td>缓存共享和免训练深度裁剪；无标签数据用于裁剪决策。对本项目训练数据算法关联较弱。</td>
+</tr>
+<tr>
+<td>8</td>
+<td><a href="https://arxiv.org/abs/2610.11316">MetaEncoder: Exploring the Limit of Bi-Encoders for Multimodal System One Decision Making with Natural Language Interface</a> · 2610.11316</td>
+<td>方法</td>
+<td>A 扩展</td>
+<td>双编码器、请求候选对比学习和大候选检索；可研究正负候选构造，但更换架构会增加首轮归因变量。</td>
+</tr>
+<tr>
+<td>9</td>
+<td><a href="https://arxiv.org/abs/2610.09328">Visual Jev Rewards: Reference-Bound Verification for Multi-Subject Image Generation</a> · 2610.09328</td>
+<td>方法</td>
+<td>A 扩展</td>
+<td>把主体身份与条件联合绑定为视觉二元监督，再作生成器奖励；有具体数据标签设计，研究对象偏图像生成。</td>
+</tr>
+<tr>
+<td>10</td>
+<td><a href="https://arxiv.org/abs/2610.09188">From Probabilities to Decisions: Search and Multi-Teacher Distillation with Jev</a> · 2610.09188</td>
+<td>方法</td>
+<td>A 第二轮</td>
+<td>固定标注预算下比较 Jev、Qwen 与多教师组合，棋类与重排收益不同；用于讨论教师互补与标注预算。</td>
+</tr>
+<tr>
+<td>11</td>
+<td><a href="https://arxiv.org/abs/2610.07730">SanSi: A Looped Typed Decision Model for System 1.5 Thinking</a> · 2610.07730</td>
+<td>方法</td>
+<td>暂缓</td>
+<td>循环隐藏态、多预算读出及 proper scoring rule；主要检验计算深度，先不与配比一起改。</td>
+</tr>
+<tr>
+<td>12</td>
+<td><a href="https://arxiv.org/abs/2610.06744">ufakzeka-karar: An Open Turkish Typed-Decision Model with Order-Invariant Option Scoring</a> · 2610.06744</td>
+<td>方法</td>
+<td>B 扩展</td>
+<td>候选独立共享位置评分带来顺序不变；定向新数据受已读测试结果影响，不能作为干净泛化证据。</td>
+</tr>
+<tr>
+<td>13</td>
+<td><a href="https://arxiv.org/abs/2610.05107">SearchJev: A Fast and Calibrated System-1 Model for Search Agents</a> · 2610.05107</td>
+<td>方法＋评测</td>
+<td>A 核心</td>
+<td>搜索决策任务、软目标、字段改写和来源隔离；重点看监督来源与标签置信度构造。</td>
+</tr>
+<tr>
+<td>14</td>
+<td><a href="https://arxiv.org/abs/2610.03935">General Decision Models: Benchmarking and Insights Beyond Jev</a> · 2610.03935</td>
+<td>方法＋评测</td>
+<td>共同必读</td>
+<td>JEVal 与 SII-Decision 自蒸馏；重点看 §6 与 F.4 的数据量、来源扩展、模板不迁移和运行预算限制。</td>
+</tr>
+<tr>
+<td>15</td>
+<td><a href="https://arxiv.org/abs/2610.03073">SecJev: Bringing Security Expertise to System One Decision Models</a> · 2610.03073</td>
+<td>方法＋评测</td>
+<td>A 核心</td>
+<td>跨来源任务统一，按 scene 内问题数反向加权；固定权重与自适应迁移配比不是同一方法。</td>
+</tr>
+<tr>
+<td>16</td>
+<td><a href="https://arxiv.org/abs/2610.02516">Student-Guided Teacher Distillation for Efficient LLM Task Routing: Positioning Against Jev-Style System-1 Classifiers</a> · 2610.02516</td>
+<td>方法</td>
+<td>A 扩展</td>
+<td>学生 top-k 提案后教师重排，迭代构造标签；注意截断类别概率不能当完整分布，人工评测仍不完整。</td>
+</tr>
+<tr>
+<td>17</td>
+<td><a href="https://arxiv.org/abs/2610.02486">From Retrieval to Typed Decisions: Calibrated System One Models from Biomedical Sentence Encoders</a> · 2610.02486</td>
+<td>方法＋评测</td>
+<td>B 扩展</td>
+<td>检索预训练、head 与目标的匹配比较；提供由 NLM 索引构造的 MEDLINE-S1。适合检查架构/目标混淆，RL 估计器暂非本主线。</td>
+</tr>
+<tr>
+<td>18</td>
+<td><a href="https://arxiv.org/abs/2610.02076">LLM-as-Jev: LLMs Are Already Jev-Style Decision Models -- When and How to Fine-Tune Them</a> · 2610.02076</td>
+<td>方法</td>
+<td>共同必读</td>
+<td>公开人工标注数据转统一决策格式，定向数据迭代与 KL anchors；公开测试错误参与设计使相关结果为探索性。</td>
+</tr>
+<tr>
+<td>19</td>
+<td><a href="https://arxiv.org/abs/2610.00831">AnyJev Technical Report</a> · 2610.00831</td>
+<td>方法</td>
+<td>B 第二轮</td>
+<td>无标签先验修正与循环换序聚合；适合作为推理端减偏对照，聚合需要额外前向，不是免费收益。</td>
+</tr>
+<tr>
+<td>20</td>
+<td><a href="https://arxiv.org/abs/2609.39111">Bongard: Training Machine Intuition</a> · 2609.39111</td>
+<td>方法</td>
+<td>A 第二轮</td>
+<td>监督判断、语义关系和动作结果三阶段；重述与 outcome 数据有价值，需区分数据、表示学习和阶段顺序。</td>
+</tr>
+<tr>
+<td>21</td>
+<td><a href="https://arxiv.org/abs/2609.38850">OpenJev-RLCD: A Working RLCD Implementation</a> · 2609.38850</td>
+<td>方法</td>
+<td>暂缓</td>
+<td>推理后分布上的 proper scoring 与先校准后强化；主要是 RL 目标/估计问题，可留给独立 RL 方向。</td>
+</tr>
+<tr>
+<td>22</td>
+<td><a href="https://arxiv.org/abs/2609.36965">Chinese-Jev: Bringing System One Model to Chinese-Language Tasks</a> · 2609.36965</td>
+<td>方法＋评测</td>
+<td>A 第二轮</td>
+<td>异构中文标签转候选概率，通用训练后领域微调；适合作为数据转换与阶段划分的参考。</td>
+</tr>
+<tr>
+<td>23</td>
+<td><a href="https://arxiv.org/abs/2609.36116">Dyad: Extending Large Language Models with Native Typed Decision-Making</a> · 2609.36116</td>
+<td>方法</td>
+<td>暂缓</td>
+<td>环境条件动作编码器和交互 RL；主要研究动作表示与架构，对当前静态数据配比不直接。</td>
+</tr>
+<tr>
+<td>24</td>
+<td><a href="https://arxiv.org/abs/2609.36115">Koa-decision: Fast and Consistent Structured Decision Making with Generative LLMs</a> · 2609.36115</td>
+<td>方法</td>
+<td>共同选读</td>
+<td>原子标签 token 与 SFT，实现单步分类和业务判断；可补足基础读出路线，数据算法创新不是主要阅读点。</td>
+</tr>
+<tr>
+<td>25</td>
+<td><a href="https://arxiv.org/abs/2609.35865">PACT: Pairwise-Anchored Calibrated Tuning for Single-Token Typed Decisions</a> · 2609.35865</td>
+<td>方法</td>
+<td>A 核心、B 按路线选读</td>
+<td>事实翻转对、排列一致性、证据必要性与序数损失；是将稳健性直接放到训练端的最近对照之一。</td>
+</tr>
+<tr>
+<td>26</td>
+<td><a href="https://arxiv.org/abs/2609.33874">JET: Justification Evaluation in Transformer</a> · 2609.33874</td>
+<td>系统/工具</td>
+<td>暂缓</td>
+<td>候选似然与共享前缀优化；主要是本地推理系统，不负责训练数据选择。</td>
+</tr>
+<tr>
+<td>27</td>
+<td><a href="https://arxiv.org/abs/2609.33609">You Only Edit Once: Incentivizing In-Context Capability of LLMs via Local Demonstration Refinement</a> · 2609.33609</td>
+<td>方法</td>
+<td>A 扩展</td>
+<td>用 Jev-LDE 对 ICL 示例做保留、删除、替换；属于推理时演示编辑，不能直接称为训练数据混合算法。</td>
+</tr>
+<tr>
+<td>28</td>
+<td><a href="https://arxiv.org/abs/2609.33282">Multi-Dimensional Comparative Scale Construction for Efficient Personalized Subjective Judgment in High-Traffic Applications</a> · 2609.33282</td>
+<td>方法</td>
+<td>A 扩展</td>
+<td>稀疏成对比较、多 judge 与 BPO 构造个性化尺度；研究 Score/偏好数据时再读。</td>
+</tr>
+<tr>
+<td>29</td>
+<td><a href="https://arxiv.org/abs/2609.25498">Universal Fractal Natural Language Decision Map: Real-Time Edge Triage Across Heterogeneous Domains</a> · 2609.25498</td>
+<td>方法（作者主张）</td>
+<td>不列核心</td>
+<td>分形坐标运行时属于另类实现主张；摘要中的成绩与机制本轮未独立核验，不作为训练数据算法的强基线。</td>
+</tr>
+<tr>
+<td>30</td>
+<td><a href="https://arxiv.org/abs/2609.23886">this-that-model-1.0: A typed decision model that decides in 30 ms, for a millionth of a cent</a> · 2609.23886</td>
+<td>方法</td>
+<td>B 第二轮</td>
+<td>小型 typed 模型与定向第二轮训练；作者报告只改善目标题族、未迁移到其他题族，适合读负迁移边界而非推广为普遍规律。</td>
+</tr>
+<tr>
+<td>31</td>
+<td><a href="https://arxiv.org/abs/2609.08183">NeoHorse-1: Towards Recursive Self-Improvement via Agentic Post-Training with Routing Harness</a> · 2609.08183</td>
+<td>方法</td>
+<td>B 第二轮</td>
+<td>轨迹质量、路由课程、能力反馈配比与 Jev 适配；近邻是完整闭环，需拆出配比、课程和数据来源各自证据。</td>
+</tr>
+</tbody>
+</table></div>
+<h2 id="reading-7">阅读时最容易混淆的四件事</h2>
+<ol>
+<li><strong>训练 Jev 与用 Jev 处理数据。</strong> Jev-LDE 编辑 ICL 演示；冻结 Jev 给 RL 回放打分；两者都很有意思，但不自动等于改善 Jev 自身的训练配比。</li>
+<li><strong>数据数量与数据机制。</strong> 数据量、来源覆盖、候选难度、标签来源、模型起点同时变化，无法单独归因于其中一项。</li>
+<li><strong>语义不变与事实反转。</strong> 候选换序应保持答案的语义；PACT 的事实编辑则应改变 gold。两者服务不同的研究问题。</li>
+<li><strong>开发收益与独立泛化。</strong> 用某个 benchmark 错误反复补题后，再在同一个 benchmark 提升，不能自动说明跨来源迁移；训练短跑或未完 epoch 也不能证明数据扩充无效。</li>
+</ol>
+<p>目前最值得形成的合读结论是：<strong>围绕“如何通过数据配比更好地训练 Jev”，结合现有模型的数据工作与团队 EP-Order 的经验，明确实际训练问题，再提出并验证数据算法。</strong> 不把检索未命中当作无人做过，不把新稿摘要当作已复现结果。</p>
+</section></main></div>
+<footer class="footer">本页保留完整题名和说明。研究方案尚待实验验证；31 篇原清单为摘要级筛分，重点论文另核对相关正文。近期 10 篇均为 arXiv 预印本。更新时覆盖同一文件。</footer>
+<script>const outline = document.querySelector("aside details"); const compact = window.matchMedia("(max-width:900px)"); function fitOutline(){outline.open = !compact.matches;} fitOutline(); compact.addEventListener("change", fitOutline);</script>
+</body></html>
